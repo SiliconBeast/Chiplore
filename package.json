@@ -1,0 +1,20 @@
+{
+  "name": "chiplore",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Free, open-source, hands-on lessons from a single logic gate to your own chip and the board it sits on.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.1.6",
+    "@fontsource-variable/doto": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "astro": "^7.4.13"
+  }
+}
