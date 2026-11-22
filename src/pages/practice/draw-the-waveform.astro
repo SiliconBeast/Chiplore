@@ -1,0 +1,124 @@
+---
+import Base from '../../layouts/Base.astro';
+import { u } from '../../lib/url.js';
+import { glyph } from '../../lib/eye.js';
+const clk = 'M0 34H40V6H80V34H120V6H160V34H200V6H240V34H280V6H320V34H360V6H400V34H440V6H480V34H520V6H560V34H600V6H640';
+const dwave = 'M0 34H70V6H230V34H300V6H330V34H450V6H580V34H640';
+const g40 = Array.from({ length: 8 }, (_, i) => `M${40 + 80 * i} 0V40`).join('');
+const g64 = Array.from({ length: 8 }, (_, i) => `M${40 + 80 * i} 0V64`).join('');
+const cells = Array.from({ length: 8 }, (_, i) => ({ left: ((40 + 80 * i) / 640) * 100, width: ((Math.min(640, 40 + 80 * (i + 1)) - (40 + 80 * i)) / 640) * 100 }));
+const lock = glyph(2);
+---
+<Base title="Practice: draw the waveform" active="Practice" footer={false} header={false}>
+  <div class="px" data-practice>
+    <header class="px-head">
+      <a href={u('/learn/digital-logic/d-flip-flop/')} aria-label="Leave practice" class="close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A9B2C1" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+      <div><p class="caps">Unit 2 · Flip-flops · Practice</p><p style="margin: 2px 0 0; font-size: 17px; font-weight: 600">Draw the waveform</p></div>
+    </header>
+
+    <div class="px-main">
+      <div style="max-width: 920px; margin: 0 auto">
+        <p style="margin: 0; font-size: 20px; line-height: 1.6"><span class="mono" style="color: var(--text2)">clk</span> and <span class="mono" style="color: var(--blue)">d</span> feed a D flip-flop. <strong style="font-weight: 600">Click each clock cycle to draw <span class="mono" style="color: var(--link)">q</span>.</strong> q starts at 0.</p>
+        <p class="quiet" style="margin: 8px 0 0; font-size: 14px">Tab to a cycle and press Space to flip it.</p>
+
+        <div class="grid">
+          <span class="sig">clk</span>
+          <svg viewBox="0 0 640 40" preserveAspectRatio="none" aria-hidden="true"><path class="guide" d={g40}></path><path d={clk} fill="none" stroke="#8A94A6" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></svg>
+          <span class="sig" style="color: var(--blue)">d</span>
+          <svg viewBox="0 0 640 40" preserveAspectRatio="none" aria-hidden="true"><path class="guide" d={g40}></path><path d={dwave} fill="none" stroke="#9DB8FF" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg>
+          <span class="sig" style="color: var(--link)">q</span>
+          <div class="qrow">
+            <svg viewBox="0 0 640 64" preserveAspectRatio="none" aria-hidden="true">
+              <path class="guide" d={g64}></path>
+              <path data-q fill="none" stroke="#62D6A2" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+              <path data-bad fill="none" stroke="#F0697F" stroke-width="3" vector-effect="non-scaling-stroke"></path>
+            </svg>
+            {cells.map((c, i) => (
+              <button type="button" class="cyc" data-cell={i} style={`left:${c.left}%;width:${c.width}%`} aria-label={`Cycle ${i + 1}: q is 0. Press to flip.`}></button>
+            ))}
+          </div>
+          <span></span>
+          <div class="wave-axis" style="margin-top: 6px"><span>0</span><span>160</span><span>320</span><span>480</span><span>640 ns</span></div>
+        </div>
+
+        <p class="rule amber" data-hint hidden style="margin-top: 28px; font-size: 16px"><span style="color: var(--amber); font-weight: 600">Hint.</span> Look only at the moments clk goes up. Whatever d is at that instant is what q holds until the next one. The dashed lines mark those moments.</p>
+      </div>
+    </div>
+
+    <footer class="px-foot">
+      <div style="max-width: 920px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; min-height: 48px">
+        <span data-right hidden role="status" style="display: inline-flex; align-items: center; gap: 14px">
+          <svg width="40" height="24" viewBox="0 0 40 24" aria-hidden="true"><path class="lockdraw" pathLength="1" d={lock.d} fill="none" stroke={lock.color} stroke-width="1.4" stroke-linecap="round"></path></svg>
+          <span><span style="display: block; font-size: 16px; font-weight: 600">Locked. The D flip-flop is now Synthesized.</span><span class="quiet" style="display: block; font-size: 14px; margin-top: 2px">Every cycle matches. <a href={u('/lab/')}>Try the Lab problem →</a></span></span>
+        </span>
+        <span data-wrong hidden role="status" style="color: var(--red); font-size: 16px"></span>
+        <div style="flex: 1 1 auto"></div>
+        <button type="button" class="btn" data-hint-btn>Get a hint</button>
+        <button type="button" class="btn go" data-check style="padding: 0 26px">Check</button>
+      </div>
+    </footer>
+  </div>
+</Base>
+
+<style>
+  .px { min-height: 100vh; display: flex; flex-direction: column; }
+  .px-head { display: flex; align-items: center; gap: 20px; min-height: 64px; padding: 0 24px; border-bottom: 1px solid var(--line); }
+  .close { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+  .px-main { flex: 1 1 auto; padding: 88px 24px 48px; }
+  .grid { margin-top: 40px; display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 16px; row-gap: 18px; align-items: center; }
+  .grid svg { width: 100%; height: 40px; }
+  .sig { font-family: var(--mono); font-size: 14px; color: var(--text3); }
+  .qrow { position: relative; height: 64px; }
+  .qrow svg { position: absolute; inset: 0; height: 64px; }
+  .guide { stroke: #F2B35A; stroke-width: 1; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity var(--base) var(--ease); }
+  .px.hint .guide { opacity: .7; }
+  .cyc { position: absolute; top: 0; height: 64px; padding: 0; border: 0; border-radius: 6px; background: transparent; cursor: pointer; }
+  .cyc:hover { box-shadow: inset 0 0 0 1px var(--line3); }
+  .px-foot { border-top: 1px solid var(--line); padding: 16px 24px; }
+  .lockdraw { stroke-dasharray: 1; animation: edgeDraw var(--slow) var(--ease) both; }
+</style>
+
+<script>
+  import { raise } from '../../scripts/progress.js';
+  const root = document.querySelector<HTMLElement>('[data-practice]')!;
+  const ANSWER = [0, 1, 1, 0, 0, 0, 1, 0];
+  const q = [0, 0, 0, 0, 0, 0, 0, 0];
+  let checked = false;
+  const HI = 6, LO = 58;
+  const xs = (i: number) => 40 + 80 * i;
+  const xe = (i: number) => Math.min(640, 40 + 80 * (i + 1));
+  const y = (v: number) => (v ? HI : LO);
+  const cells = [...root.querySelectorAll<HTMLButtonElement>('[data-cell]')];
+  const right = root.querySelector<HTMLElement>('[data-right]')!;
+  const wrong = root.querySelector<HTMLElement>('[data-wrong]')!;
+
+  function render() {
+    let d = `M0 ${LO}H40`, bad = '', n = 0;
+    q.forEach((v, i) => {
+      d += `V${y(v)}H${xe(i)}`;
+      if (v !== ANSWER[i]) { n++; if (checked) bad += `M${xs(i) + 6} ${y(v)}H${xe(i) - 6}`; }
+    });
+    root.querySelector('[data-q]')!.setAttribute('d', d);
+    root.querySelector('[data-bad]')!.setAttribute('d', bad || 'M0 0');
+    cells.forEach((c, i) => c.setAttribute('aria-label', `Cycle ${i + 1}: q is ${q[i]}${checked && q[i] !== ANSWER[i] ? ', marked wrong' : ''}. Press to flip.`));
+    right.hidden = !(checked && n === 0);
+    wrong.hidden = !(checked && n > 0);
+    wrong.textContent = n === 1 ? "1 cycle doesn't match yet. It's marked in red." : `${n} cycles don't match yet. They're marked in red.`;
+    return n;
+  }
+  cells.forEach((c, i) => c.addEventListener('click', () => { q[i] ^= 1; checked = false; render(); }));
+  root.querySelector('[data-check]')!.addEventListener('click', () => {
+    checked = true;
+    const n = render();
+    if (n === 0) raise('the-d-flip-flop', 2);
+    else raise('the-d-flip-flop', 1);
+  });
+  const hintBtn = root.querySelector<HTMLButtonElement>('[data-hint-btn]')!;
+  hintBtn.addEventListener('click', () => {
+    const on = !root.classList.contains('hint');
+    root.classList.toggle('hint', on);
+    root.querySelector<HTMLElement>('[data-hint]')!.hidden = !on;
+    hintBtn.textContent = on ? 'Hide hint' : 'Get a hint';
+  });
+  render();
+</script>

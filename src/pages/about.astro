@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import { LEVELS, glyph } from '../lib/eye.js';
+import { REPO } from '../lib/url.js';
+const drift = glyph(3, true);
+---
+<Base title="About and mastery">
+  <div class="wrap narrow" style="padding-top: 56px">
+    <p class="caps">About</p>
+    <h1 class="title" style="margin-top: 12px">Hardware shouldn't be the scary option.</h1>
+    <p class="lead" style="margin: 16px 0 0">Software has endless free courses, practice sites and roadmaps. Hardware has scattered university pages and expensive tools. Chiplore is a free, open-source path from a single logic gate to your own chip and the board it sits on, with everything runnable in the browser.</p>
+
+    <section style="margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--line)" aria-labelledby="mastery">
+      <h2 id="mastery" class="h2">Mastery is a signal you clean up</h2>
+      <p class="muted" style="margin: 12px 0 0; font-size: 17px; line-height: 1.65">Every skill shows an eye diagram, the picture engineers use to judge a real data link. The wider and cleaner the opening, the better you know it.</p>
+      <ul class="levels">
+        {LEVELS.map((l) => { const g = glyph(l.id); return (
+          <li><svg width="48" height="28" viewBox="0 0 40 24" aria-hidden="true"><path d={g.d} fill="none" stroke={g.color} stroke-width="1.3" stroke-linecap="round"></path></svg><span class="lname">{l.name}</span><span class="muted">{l.rule}</span></li>
+        ); })}
+        <li><svg width="48" height="28" viewBox="0 0 40 24" aria-hidden="true"><path d={drift.d} fill="none" stroke={drift.color} stroke-opacity={drift.opacity} stroke-width="1.3" stroke-linecap="round"></path></svg><span class="lname">Drifting</span><span class="muted">Verified, but no review in three weeks. A short review locks it again.</span></li>
+      </ul>
+      <div class="two">
+        <p class="rule green"><strong>Colour is what you earned.</strong> It never goes down.</p>
+        <p class="rule green"><strong>Sharpness is how fresh it is.</strong> Nothing is taken away; the eye just blurs until you review.</p>
+      </div>
+      <p class="quiet" style="margin: 24px 0 0; font-size: 14px">Progress is stored only in your browser. No account, no tracking.</p>
+    </section>
+
+    <section style="margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--line)" aria-labelledby="open">
+      <h2 id="open" class="h2">Open source, written in the open</h2>
+      <p class="muted" style="margin: 12px 0 0; font-size: 17px; line-height: 1.65">Lessons are MDX files, courses and roadmaps are plain data, and every page has an edit link. Code is MIT; lesson content is CC BY-SA 4.0, so anyone can fork, translate or teach from it.</p>
+      <div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap">
+        <a class="btn go" href={`${REPO}/blob/main/CONTRIBUTING.md`}>Write a lesson</a>
+        <a class="btn" href={REPO}>View on GitHub</a>
+      </div>
+    </section>
+  </div>
+</Base>
+<style>
+  .levels { list-style: none; margin: 24px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .levels li { display: grid; grid-template-columns: 64px 130px 1fr; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .lname { font-weight: 600; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; }
+  .two p { margin: 0; }
+  @media (max-width: 640px) { .two { grid-template-columns: 1fr; } .levels li { grid-template-columns: 56px 1fr; } .levels li .muted { grid-column: 2; } }
+</style>

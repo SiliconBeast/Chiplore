@@ -1,0 +1,11 @@
+---
+// One skill's mastery glyph. progress.js re-draws it from localStorage on load.
+import { glyph } from '../lib/eye.js';
+import { skillId } from '../data/courses.js';
+interface Props { skill: string; level?: number; width?: number; height?: number }
+const { skill, level = 0, width = 34, height = 20 } = Astro.props;
+const g = glyph(level);
+---
+<svg class="eye" data-skill={skillId(skill)} width={width} height={height} viewBox="0 0 40 24" role="img" aria-label={`${skill}: ${g.label}`}>
+  <path d={g.d} fill="none" stroke={g.color} stroke-opacity={g.opacity} stroke-width="1.4" stroke-linecap="round" />
+</svg>

@@ -1,0 +1,50 @@
+---
+title: The D flip-flop
+course: digital-logic
+unit: 2
+order: 2
+minutes: 12
+art: flipflop
+skill: The D flip-flop
+summary: Every register, counter and CPU pipeline is built from this one part. Learn exactly when it looks at its input.
+next:
+  title: Practice — draw the waveform
+  href: /practice/draw-the-waveform/
+---
+import TryIt from '../../../components/TryIt.astro';
+import Note from '../../../components/Note.astro';
+import Quiz from '../../../components/Quiz.astro';
+
+Every register, counter and CPU pipeline is built from this one part. Once you know *when* it looks at its input, you can read any timing diagram you'll meet.
+
+## How it behaves
+
+A D flip-flop copies its input `d` to its output `q`, but only at the **rising edge** of the clock. Between edges, `q` holds whatever it had. That's memory: one bit of it.
+
+<Note term="Non-blocking assignment">The <code>&lt;=</code> in <code>q &lt;= d;</code>. It means "on this edge, q becomes d". Use it for anything clocked.</Note>
+
+## Try it
+
+Here is a flip-flop in Verilog, with a clock and a `d` input that changes at awkward times. Press **Run**, then look at where `q` changes.
+
+<TryIt />
+
+**Your turn.** Change `q <= d;` to `q <= ~d;` and run it again. What happens to `q`? Then try `q <= ~q;`. Why does it never leave X?
+
+## Reading the waveform
+
+Find each rising edge of `clk`. Look straight down to `d`. Whatever `d` is at that instant is what `q` becomes, until the next edge. Anything `d` does *between* edges is invisible to the flip-flop.
+
+<Quiz
+  skill="The D flip-flop"
+  question="d blips high at 300 ns and drops at 330 ns. What does q do?"
+  options={[
+    'q goes high at 300 ns',
+    'q goes high at the next rising edge, 360 ns',
+    'q stays low: the blip ends before the next edge',
+    'q becomes unknown (X)',
+  ]}
+  answer={2}
+  right="Right. The blip ends before the next edge, so q never stores it."
+  wrong="Not quite. What is d at 360 ns, the next rising edge?"
+/>

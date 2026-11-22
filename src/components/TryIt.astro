@@ -1,0 +1,166 @@
+---
+// Live D flip-flop: edit `q <= ...;`, press Run, see q against clk and d.
+// Runs on the teaching simulator in src/lib/bitsim.js.
+interface Props { file?: string }
+const { file = 'dff.v' } = Astro.props;
+const START = `module dff (
+  input  wire clk,
+  input  wire d,
+  output reg  q
+);
+  always @(posedge clk)
+    q <= d;
+endmodule`;
+const edges = Array.from({ length: 8 }, (_, i) => `M${40 + 80 * i} 0V32`).join('');
+---
+<section class="tryit" data-tryit data-start={START} aria-label="Try it">
+  <div class="bar">
+    <span class="mono" style="font-size: 13px; color: var(--body)">{file}</span>
+    <span class="quiet" style="font-size: 12px">editable</span>
+    <div style="flex: 1 1 auto"></div>
+    <button type="button" class="btn sm" data-reset>Reset</button>
+    <button type="button" class="btn go sm" data-run>
+      <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"></path></svg>Run
+    </button>
+  </div>
+  <div class="editor" data-editor>
+    <pre data-gutter aria-hidden="true"></pre>
+    <div class="ed">
+      <pre data-hl aria-hidden="true"></pre>
+      <textarea spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Verilog code for the flip-flop">{START}</textarea>
+    </div>
+  </div>
+  <div class="out">
+    <div class="out-bar">
+      <div role="group" aria-label="Output view" style="display: flex; gap: 20px">
+        <button type="button" class="tab" aria-pressed="true" data-view="waves">Waveform</button>
+        <button type="button" class="tab" aria-pressed="false" data-view="circuit">Circuit</button>
+      </div>
+      <span class="status" data-status role="status">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3FBF86" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg>
+        <span>640 ns · 0 errors</span>
+      </span>
+    </div>
+    <div data-pane="waves">
+      <div class="waves" style="margin-top: 14px">
+        <span class="sig">clk</span>
+        <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path d={edges} stroke="#1F2937" stroke-width="1" vector-effect="non-scaling-stroke"></path><path data-wave="clk" fill="none" stroke="#8A94A6" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></svg>
+        <span class="sig" style="color: var(--blue)">d</span>
+        <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path d={edges} stroke="#1F2937" stroke-width="1" vector-effect="non-scaling-stroke"></path><path data-wave="d" fill="none" stroke="#9DB8FF" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg>
+        <span class="sig" style="color: var(--link)">q</span>
+        <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path d={edges} stroke="#1F2937" stroke-width="1" vector-effect="non-scaling-stroke"></path><path data-wave="x" fill="none" stroke="#F0697F" stroke-width="1.5" vector-effect="non-scaling-stroke"></path><path class="wavedraw" data-wave="q" pathLength="1" fill="none" stroke="#62D6A2" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg>
+        <span></span>
+        <div class="wave-axis"><span>0</span><span>160</span><span>320</span><span>480</span><span>640 ns</span></div>
+      </div>
+      <p class="explain" data-explain></p>
+    </div>
+    <div data-pane="circuit" hidden>
+      <svg class="circuit" width="420" height="140" viewBox="0 0 420 140" role="img" aria-label="Synthesized circuit: one D flip-flop">
+        <g font-family="Geist Mono Variable, Geist Mono, monospace" font-size="13">
+          <text x="0" y="48" fill="#9DB8FF" data-circ-in>d</text>
+          <path d="M40 44H170M40 100H170M290 44H360" stroke="#64708A" stroke-width="1.5"></path>
+          <g data-circ-logic hidden>
+            <rect x="70" y="28" width="70" height="32" rx="6" fill="none" stroke="#C3A6FF" stroke-width="1.5"></rect>
+            <text x="105" y="49" text-anchor="middle" fill="#C3A6FF" font-size="11">logic</text>
+          </g>
+          <rect x="170" y="18" width="120" height="104" rx="8" fill="#141C27" stroke="#3FBF86" stroke-width="1.5"></rect>
+          <path d="M170 92l10 8-10 8" fill="none" stroke="#3FBF86" stroke-width="1.5" stroke-linejoin="round"></path>
+          <text x="184" y="49" fill="#E7EAF0">D</text><text x="268" y="49" fill="#E7EAF0">Q</text>
+          <text x="230" y="112" text-anchor="middle" fill="#8A94A6" font-size="11">$_DFF_P_</text>
+          <text x="0" y="104" fill="#8A94A6">clk</text>
+          <text x="370" y="48" fill="#62D6A2">q</text>
+          <path data-circ-loop d="M360 44V8H60V44" fill="none" stroke="#C3A6FF" stroke-width="1.2" stroke-dasharray="4 3" hidden></path>
+        </g>
+      </svg>
+      <p class="explain" data-circ-explain></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tryit { margin: 32px 0; border-top: 1px solid var(--line2); border-bottom: 1px solid var(--line2); }
+  .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .out { border-top: 1px solid var(--line); padding: 6px 0 20px; }
+  .out-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+  .out-bar .tab { height: 40px; font-size: 14px; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text3); font-family: var(--mono); }
+  .status.err { color: var(--red); }
+  .explain { margin: 14px 0 0; font-size: 15px; line-height: 1.65; color: var(--text2); max-width: 640px; }
+  .circuit { margin: 18px auto 0; max-width: 100%; height: auto; }
+  .wavedraw { stroke-dasharray: 1; }
+  .wavedraw.go { animation: edgeDraw 1.2s var(--ease) both; }
+</style>
+
+<script>
+  import { compile, extract, clockPath, signalPath, unknownPath, SimError } from '../lib/bitsim.js';
+  import { mountEditor } from '../scripts/editor.js';
+
+  const D = [[0, 0], [70, 1], [230, 0], [300, 1], [330, 0], [450, 1], [580, 0]];
+  const EDGES = Array.from({ length: 8 }, (_, i) => 40 + 80 * i);
+  const dAt = (t: number) => { let v = 0; for (const [tt, vv] of D) if (tt <= t) v = vv; return v; };
+
+  document.querySelectorAll<HTMLElement>('[data-tryit]').forEach((root) => {
+    const ed = mountEditor(root.querySelector('[data-editor]'));
+    const $ = (s: string) => root.querySelector(s) as any;
+    const status = $('[data-status]');
+    const explain = $('[data-explain]');
+    $('[data-wave="clk"]').setAttribute('d', clockPath(80, 640));
+    $('[data-wave="d"]').setAttribute('d', signalPath(D, 640));
+
+    function run(animate: boolean) {
+      let exprText: string;
+      let fn: (e: any) => number;
+      try {
+        exprText = extract(ed.value, 'q', 'nonblocking').trim();
+        fn = compile(exprText, ['d', 'q']);
+      } catch (err) {
+        status.className = 'status err';
+        status.innerHTML = `<span>${err instanceof SimError ? err.message : 'Something went wrong.'}</span>`;
+        return;
+      }
+      const usesQ = /\bq\b/.test(exprText);
+      let q: number | null = null;
+      const pts: [number, number | null][] = [[0, null]];
+      for (const t of EDGES) {
+        const next = usesQ && q === null ? null : fn({ d: dAt(t - 0.001), q: q ?? 0 });
+        q = next;
+        pts.push([t, q]);
+      }
+      const firstKnown = pts.find(([, v]) => v !== null);
+      const xUntil = firstKnown ? firstKnown[0] : 640;
+      $('[data-wave="x"]').setAttribute('d', unknownPath(xUntil));
+      const qPath = $('[data-wave="q"]');
+      qPath.setAttribute('d', signalPath(pts, 640));
+      if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        qPath.classList.remove('go'); void qPath.getBoundingClientRect(); qPath.classList.add('go');
+      }
+      status.className = 'status';
+      status.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3FBF86" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"></path></svg><span>640 ns · 0 errors</span>';
+
+      const plain = exprText.replace(/\s+/g, '');
+      if (plain === 'd') {
+        explain.innerHTML = '<span style="color:#F0697F">X</span> means unknown: q has stored nothing until the first rising edge at 40 ns. The blip on d at 300 ns falls between edges, so q never sees it.';
+      } else if (usesQ && q === null) {
+        explain.innerHTML = 'q depends on its own old value, but that value is unknown, so it stays <span style="color:#F0697F">X</span> forever. Real flip-flops need a reset for exactly this reason.';
+      } else if (plain === '~d' || plain === '!d') {
+        explain.textContent = 'q is now the opposite of d at each rising edge. The flip-flop still only looks at d on the edge.';
+      } else {
+        explain.textContent = `q takes the value of ${exprText} at every rising edge of clk, and holds it until the next one.`;
+      }
+      const isD = plain === 'd';
+      $('[data-circ-logic]').hidden = isD;
+      $('[data-circ-loop]').hidden = !usesQ;
+      $('[data-circ-explain]').textContent = isD
+        ? 'Yosys turns your 8 lines into exactly one flip-flop cell.'
+        : `One flip-flop, plus a little logic in front of D to compute ${exprText}.`;
+    }
+
+    $('[data-run]').addEventListener('click', () => run(true));
+    $('[data-reset]').addEventListener('click', () => { ed.value = root.dataset.start!; run(true); });
+    root.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((b) => b.addEventListener('click', () => {
+      root.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      root.querySelectorAll<HTMLElement>('[data-pane]').forEach((p) => (p.hidden = p.dataset.pane !== b.dataset.view));
+    }));
+    run(false);
+  });
+</script>

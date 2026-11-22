@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CourseArt from '../../components/CourseArt.astro';
+import Eye from '../../components/Eye.astro';
+import { courses } from '../../data/courses.js';
+import { u, REPO } from '../../lib/url.js';
+import { clockPath } from '../../lib/bitsim.js';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  return lessons.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const course = courses.find((c) => c.slug === d.course)!;
+const unit = course.units?.[d.unit - 1];
+const items = unit?.items ?? [];
+const here = `/learn/${entry.id}/`;
+const clk = clockPath(16, 1600, 2, 12);
+---
+<Base title={d.title} description={d.summary} active="Courses">
+  <div class="read-progress" aria-hidden="true">
+    <svg viewBox="0 0 1600 14" preserveAspectRatio="none">
+      <path d={clk} fill="none" stroke="#1F2937" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>
+      <path class="clk-live" pathLength="1" d={clk} fill="none" stroke="#3FBF86" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>
+    </svg>
+  </div>
+  <div class="wrap lesson-grid">
+    <aside class="side" aria-label="This unit">
+      <a class="quiet" href={u(`/courses/${course.slug}/`)} style="font-size: 14px">← {course.title}</a>
+      <p class="caps" style="margin-top: 20px">Unit {d.unit} · {unit?.title}</p>
+      <ol class="side-list">
+        {items.map((it: any) => (
+          <li>
+            {it.href ? (
+              <a href={u(it.href)} aria-current={it.href === here ? 'page' : undefined}>{it.title}<span class="quiet">{it.kind}</span></a>
+            ) : (
+              <span class="planned">{it.title}<span class="quiet">planned</span></span>
+            )}
+          </li>
+        ))}
+      </ol>
+      <div class="side-skill">
+        <p class="caps">This lesson builds</p>
+        <p style="display: flex; align-items: center; gap: 10px; margin: 10px 0 0; font-size: 15px"><Eye skill={d.skill} />{d.skill}</p>
+      </div>
+    </aside>
+
+    <article class="lesson">
+      <header class="lesson-head">
+        <CourseArt name={d.art} size={60} />
+        <div>
+          <h1 class="title">{d.title}</h1>
+          <p class="quiet" style="margin: 6px 0 0; font-size: 15px">{d.level} · {d.minutes} min · runs in your browser</p>
+        </div>
+      </header>
+      <div class="prose">
+        <Content />
+      </div>
+      <footer class="lesson-foot">
+        <a class="quiet" href={`${REPO}/edit/main/src/content/lessons/${entry.id}.mdx`} style="font-size: 14px">Suggest an edit on GitHub</a>
+        {d.next && (
+          <a class="next" href={u(d.next.href)}>
+            <span class="quiet" style="font-size: 13px">Next</span>
+            <span style="font-size: 16px; font-weight: 600; color: var(--text)">{d.next.title} →</span>
+          </a>
+        )}
+      </footer>
+    </article>
+  </div>
+</Base>
+
+<style>
+  .lesson-grid { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 64px; padding-top: 48px; }
+  .side { position: sticky; top: 40px; align-self: start; }
+  .side-list { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .side-list a, .side-list .planned { display: flex; flex-direction: column; gap: 2px; padding: 10px 0 10px 12px; border-bottom: 1px solid var(--line); color: var(--text2); font-size: 15px; }
+  .side-list a:hover { color: var(--text); text-decoration: none; }
+  .side-list a[aria-current="page"] { color: var(--text); box-shadow: inset 2px 0 0 var(--accent); }
+  .side-list .planned { color: #5E6A7D; }
+  .side-list span.quiet { font-size: 12px; text-transform: capitalize; }
+  .side-skill { margin-top: 28px; }
+  .lesson { max-width: 740px; }
+  .lesson-head { display: flex; align-items: center; gap: 18px; }
+  .prose > :global(p:first-child) { margin-top: 28px; font-size: 19px; line-height: 1.7; }
+  .prose { font-size: 18px; line-height: 1.75; color: var(--body); }
+  .prose :global(h2) { margin: 44px 0 0; font-size: 24px; letter-spacing: -0.02em; color: var(--text); }
+  .prose :global(p) { margin: 14px 0 0; }
+  .prose :global(ul) { margin: 14px 0 0; padding-left: 22px; }
+  .prose :global(li) { margin: 6px 0; }
+  .prose :global(strong) { color: var(--text); font-weight: 600; }
+  .prose :global(code) { font-size: .88em; color: var(--amber); }
+  .prose :global(a) { text-decoration: underline; text-decoration-color: var(--line3); text-underline-offset: 4px; }
+  .lesson-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .next { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .next:hover { text-decoration: none; }
+  @media (max-width: 900px) { .lesson-grid { grid-template-columns: 1fr; } .side { position: static; } }
+</style>

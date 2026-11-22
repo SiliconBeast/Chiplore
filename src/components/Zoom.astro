@@ -1,0 +1,112 @@
+---
+// Board → package → die → standard cells → one inverter.
+// Each layer scales ×3 around the next layer's target while the two crossfade.
+import layers from '../data/zoom-layers.json';
+import { u } from '../lib/url.js';
+const stops = [
+  { name: 'Board', fov: '120 mm', title: 'A development board', body: 'Copper traces carry power and signals between parts. The black square in the middle is the chip.', course: 'PCB design', href: '/courses/pcb/' },
+  { name: 'Package', fov: '7 mm', title: 'Inside the package', body: 'Open the black square and there is a small piece of silicon. Gold bond wires, thinner than a hair, connect it to the pins.', course: 'Chip design', href: '/courses/chip-design/' },
+  { name: 'Die', fov: '2.5 mm', title: 'The die', body: 'A few millimetres of silicon: memory blocks, analog parts like the PLL and ADC, and a sea of logic in the middle.', course: 'Computer architecture', href: '/courses/computer-architecture/' },
+  { name: 'Cells', fov: '30 µm', title: 'Standard cells', body: 'Logic is tiled in rows of same-height cells, with power rails between rows and metal wires above.', course: 'Timing and synthesis', href: '/courses/timing/' },
+  { name: 'Transistors', fov: '1.5 µm', title: 'One inverter', body: 'Two transistors sharing one poly gate. Input low turns on the top PMOS and pulls the output high.', course: 'Digital logic and Verilog', href: '/learn/digital-logic/logic-gates/' },
+];
+---
+<figure class="zoom" data-zoom>
+  <div class="zoom-stage">
+    <svg viewBox="0 0 960 540" role="img" aria-label="Zoom from a circuit board down to one transistor" data-zoom-svg>
+      {layers.map((g, i) => (
+        <g class="zl" data-layer={i} style={`opacity:${i === 0 ? 1 : 0};transform:scale(${Math.pow(3, -i)});visibility:${i === 0 ? 'visible' : 'hidden'}`} set:html={g}></g>
+      ))}
+    </svg>
+  </div>
+  <div class="zoom-controls">
+    <button type="button" class="zoom-arrow" data-zoom-out aria-label="Zoom out"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+    <input type="range" min="0" max="400" step="1" value="0" aria-label="Zoom level" data-zoom-range />
+    <button type="button" class="zoom-arrow" data-zoom-in aria-label="Zoom in"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"></path></svg></button>
+  </div>
+  <div class="zoom-stops" role="group" aria-label="Zoom levels">
+    {stops.map((s, i) => <button type="button" class="tab" data-zoom-stop={i} aria-pressed={i === 0 ? 'true' : 'false'}>{s.name}</button>)}
+  </div>
+  <figcaption class="zoom-cap">
+    <div>
+      <p class="caps">Field of view</p>
+      <p class="dots zoom-fov" data-zoom-fov>120 MM</p>
+    </div>
+    <div aria-live="polite">
+      {stops.map((s, i) => (
+        <div class="zoom-text" data-zoom-text={i} hidden={i !== 0}>
+          <p class="zoom-title">{s.title}</p>
+          <p class="muted">{s.body}</p>
+          <a href={u(s.href)}>{s.course} →</a>
+        </div>
+      ))}
+    </div>
+  </figcaption>
+</figure>
+
+<style>
+  .zoom { margin: 0; }
+  .zoom-stage { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow: hidden; }
+  .zoom-stage svg { width: 100%; height: auto; }
+  .zl { transform-box: view-box; transform-origin: 480px 270px; }
+  .zoom.animate .zl { transition: transform .7s var(--ease), opacity .7s var(--ease); }
+  .zoom-controls { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+  .zoom-arrow { width: 36px; height: 36px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line2); border-radius: 8px; background: none; color: var(--text); cursor: pointer; }
+  .zoom-arrow:hover { border-color: var(--line3); }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: none; margin: 0; cursor: pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line2); }
+  input[type=range]::-moz-range-track { height: 2px; background: var(--line2); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -6px; border-radius: 3px; background: var(--accent); }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 3px; background: var(--accent); }
+  .zoom-stops { display: flex; justify-content: space-between; padding: 0 50px; margin-top: 2px; }
+  .zoom-stops .tab { height: 38px; font-size: 13px; }
+  .zoom-cap { display: grid; grid-template-columns: 170px 1fr; gap: 24px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .zoom-fov { margin: 6px 0 0; font-size: 30px; }
+  .zoom-title { margin: 0; font-size: 17px; font-weight: 600; }
+  .zoom-text .muted { margin: 6px 0 8px; font-size: 15px; line-height: 1.55; }
+  .zoom-text a { font-size: 14px; font-weight: 500; }
+  @media (max-width: 720px) { .zoom-cap { grid-template-columns: 1fr; } .zoom-stops { padding: 0; } }
+  @media (prefers-reduced-motion: reduce) { .zoom.animate .zl { transition: opacity .2s linear; } }
+</style>
+
+<script>
+  const FOV = [120, 7, 2.5, 0.03, 0.0015];
+  document.querySelectorAll<HTMLElement>('[data-zoom]').forEach((root) => {
+    const layers = [...root.querySelectorAll<SVGGElement>('.zl')];
+    const range = root.querySelector<HTMLInputElement>('[data-zoom-range]')!;
+    const fovEl = root.querySelector<HTMLElement>('[data-zoom-fov]')!;
+    const stops = [...root.querySelectorAll<HTMLButtonElement>('[data-zoom-stop]')];
+    const texts = [...root.querySelectorAll<HTMLElement>('[data-zoom-text]')];
+    let z = 0;
+    function fmt(v: number) {
+      if (v >= 10) return `${Math.round(v)} MM`;
+      if (v >= 1) return `${v.toFixed(1)} MM`;
+      if (v >= 0.01) return `${Math.round(v * 1000)} UM`;
+      return `${(v * 1000).toFixed(1)} UM`;
+    }
+    function render(animate: boolean) {
+      root.classList.toggle('animate', animate);
+      layers.forEach((g, i) => {
+        const d = z - i;
+        const o = i === 0 && d < 0 ? 1 : Math.max(0, 1 - Math.abs(d));
+        g.style.transform = `scale(${Math.pow(3, d).toFixed(4)})`;
+        g.style.opacity = o.toFixed(3);
+        g.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+      });
+      const lo = Math.min(3, Math.floor(z)), f = z - lo;
+      const v = Math.exp(Math.log(FOV[lo]) * (1 - f) + Math.log(FOV[lo + 1]) * f);
+      fovEl.textContent = fmt(v);
+      range.value = String(Math.round(z * 100));
+      range.setAttribute('aria-valuetext', fmt(v).toLowerCase());
+      const near = Math.round(z);
+      stops.forEach((b, i) => b.setAttribute('aria-pressed', String(i === near)));
+      texts.forEach((t, i) => (t.hidden = i !== near));
+    }
+    const go = (n: number) => { z = Math.max(0, Math.min(4, n)); render(true); };
+    range.addEventListener('input', () => { z = Number(range.value) / 100; render(false); });
+    root.querySelector('[data-zoom-in]')!.addEventListener('click', () => go(Math.floor(z) + 1));
+    root.querySelector('[data-zoom-out]')!.addEventListener('click', () => go(Math.ceil(z) - 1));
+    stops.forEach((b, i) => b.addEventListener('click', () => go(i)));
+    render(false);
+  });
+</script>

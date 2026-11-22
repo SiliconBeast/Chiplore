@@ -1,0 +1,10 @@
+---
+// Rising-edge die: green die, dark rising edge, gold pins.
+interface Props { size?: number }
+const { size = 30 } = Astro.props;
+---
+<svg class="logo-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
+  <path class="logo-pins" d="M3 21h7M3 32h7M3 43h7M54 21h7M54 32h7M54 43h7" stroke="#E7A93A" stroke-width="3.5" stroke-linecap="round" />
+  <rect x="10" y="10" width="44" height="44" rx="11" fill="#3FBF86" />
+  <path class="logo-edge" pathLength="1" d="M20 42H30V22H44" fill="none" stroke="#04140C" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

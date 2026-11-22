@@ -1,0 +1,11 @@
+---
+// A glossary note: a green rule, never a tinted box.
+interface Props { term: string }
+const { term } = Astro.props;
+---
+<aside class="rule green note" role="note">
+  <strong>{term}.</strong> <slot />
+</aside>
+<style>
+  .note { margin: 20px 0; max-width: 560px; font-size: 16px; }
+</style>

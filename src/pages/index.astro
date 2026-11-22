@@ -1,0 +1,125 @@
+---
+import Base from '../layouts/Base.astro';
+import CourseArt from '../components/CourseArt.astro';
+import Zoom from '../components/Zoom.astro';
+import { courses, roadmaps } from '../data/courses.js';
+import { glyph } from '../lib/eye.js';
+import { u } from '../lib/url.js';
+
+const starts = [
+  { title: 'Brand new to hardware', body: 'Start from bits and logic gates. No background needed.', href: '/learn/digital-logic/logic-gates/', icon: 'M3 9h5M3 15h5M8 5h5a7 7 0 0 1 0 14H8zM20 12h2' },
+  { title: 'Coming from software', body: 'See how code you know maps onto real hardware.', href: '/learn/digital-logic/d-flip-flop/', icon: 'M5 5h14v14H5zM10 9.5L7.5 12l2.5 2.5M14 9.5l2.5 2.5-2.5 2.5' },
+  { title: 'Aiming for a hardware job', body: 'Follow a role roadmap and practise real interview problems.', href: '/roadmaps/', icon: 'M4 19a2 2 0 1 0 4 0a2 2 0 1 0-4 0M16 5a2 2 0 1 0 4 0a2 2 0 1 0-4 0M8 19h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6' },
+  { title: 'Teaching a class', body: 'Assign free lessons and labs, and fork them for your course.', href: 'https://github.com/SiliconBeast/Chiplore', icon: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z' },
+];
+const units = (c: any) => (c.units ? `${c.units.length} units` : 'Being written');
+const verified = glyph(3);
+---
+<Base>
+  <section class="wrap hero">
+    <div class="hero-text">
+      <h1 class="display">Learn how chips and circuit boards really work.</h1>
+      <p class="lead">Free, hands-on lessons from a single logic gate to your own chip and the board it sits on. Everything runs in the browser.</p>
+      <div class="hero-ctas">
+        <a class="btn go" href={u('/courses/digital-logic/')}>Start learning</a>
+        <a class="btn" href={u('/roadmaps/')}>See roadmaps</a>
+      </div>
+      <p class="quiet" style="margin: 22px 0 0; font-size: 14px">No account · open source · always free</p>
+    </div>
+    <Zoom />
+  </section>
+
+  <section class="wrap block" aria-labelledby="start-title">
+    <h2 id="start-title" class="h3">Where are you starting from?</h2>
+    <div class="two-col">
+      {starts.map((s) => (
+        <a class="row-link" href={s.href.startsWith('http') ? s.href : u(s.href)}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#62D6A2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={s.icon}></path></svg>
+          <span style="flex: 1 1 auto"><span style="display: block; font-size: 17px; font-weight: 600">{s.title}</span><span class="muted" style="display: block; margin-top: 2px; font-size: 15px">{s.body}</span></span>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A94A6" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="courses-title">
+    <div class="wrap">
+      <h2 id="courses-title" class="h2">Courses</h2>
+      <p class="muted" style="margin: 8px 0 0; font-size: 17px">Start at the top and work down, or jump straight to what you need.</p>
+      <div class="course-grid">
+        {courses.map((c) => (
+          <a class="course-card" href={u(`/courses/${c.slug}/`)}>
+            <CourseArt name={c.art} vt={`art-${c.slug}`} />
+            <span>
+              <span class="course-name" style={`view-transition-name: title-${c.slug}`}>{c.title}</span>
+              <span class="muted course-blurb">{c.blurb}</span>
+              <span class="quiet course-meta">{c.meta} · {units(c)}{c.status === 'writing' ? ' · help wanted' : ''}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="how-title">
+    <div class="wrap">
+      <h2 id="how-title" class="h2">Hardware you can see</h2>
+      <div class="three-col">
+        <div>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#62D6A2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 17h4V7h6v10h6V7h4"></path></svg>
+          <h3 class="feat-title">Run every idea</h3>
+          <p class="muted feat-body">Lessons have live code with waveforms and the circuit it turns into. Change a line, press Run, watch what happens.</p>
+        </div>
+        <div>
+          <svg width="40" height="24" viewBox="0 0 40 24" aria-hidden="true"><path d={verified.d} fill="none" stroke={verified.color} stroke-width="1.4" stroke-linecap="round"></path></svg>
+          <h3 class="feat-title">Mastery you can read like a signal</h3>
+          <p class="muted feat-body">Every skill is an eye diagram. It opens up as you practise and blurs if you stop reviewing. <a href={u('/about/')}>How mastery works</a></p>
+        </div>
+        <div>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#62D6A2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21V4h10l-2 3.5 2 3.5H7M3 21h18"></path></svg>
+          <h3 class="feat-title">Finish with something real</h3>
+          <p class="muted feat-body">Courses end in projects on real hardware: an FPGA build, a board you order, a chip sent to fab.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="roles-title">
+    <div class="wrap">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap">
+        <h2 id="roles-title" class="h2">Roadmaps to real jobs</h2>
+        <a href={u('/roadmaps/')} style="font-weight: 600; font-size: 15px">All {roadmaps.length} roadmaps</a>
+      </div>
+      <div style="margin-top: 20px">
+        {roadmaps.slice(0, 3).map((r) => (
+          <a class="row-link" href={u(`/roadmaps/#${r.id}`)}>
+            <span style="flex: 0 0 240px; font-size: 18px; font-weight: 600">{r.name} engineer</span>
+            <span class="muted" style="flex: 1 1 360px; font-size: 15px">{r.stages.map((s) => s.name).join(' → ')}</span>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A94A6" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: 72px; padding-bottom: 80px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
+  .hero-text .lead { margin: 22px 0 0; max-width: 520px; font-size: 19px; }
+  .hero-ctas { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+  .hero-ctas .btn { min-height: 48px; padding: 0 24px; font-size: 16px; }
+  .block { padding-bottom: 80px; }
+  .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); column-gap: 48px; margin-top: 8px; }
+  .band { border-top: 1px solid var(--line); padding: 72px 0; }
+  .course-grid { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); gap: 40px 48px; }
+  .course-card { display: flex; gap: 22px; align-items: flex-start; color: var(--text); text-decoration: none; }
+  .course-card:hover { text-decoration: none; }
+  .course-card:hover .course-name { text-decoration: underline; text-decoration-color: var(--line3); text-underline-offset: 4px; }
+  .course-name { display: block; width: max-content; max-width: 100%; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .course-blurb { display: block; margin-top: 4px; font-size: 15px; line-height: 1.55; }
+  .course-meta { display: block; margin-top: 8px; font-size: 13px; }
+  .three-col { margin-top: 36px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 40px; }
+  .feat-title { margin: 14px 0 0; font-size: 18px; }
+  .feat-body { margin: 8px 0 0; font-size: 16px; line-height: 1.6; }
+  @media (max-width: 960px) { .hero { grid-template-columns: 1fr; } }
+</style>

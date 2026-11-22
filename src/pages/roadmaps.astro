@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+import Eye from '../components/Eye.astro';
+import { roadmaps, courses, skillId } from '../data/courses.js';
+import { u } from '../lib/url.js';
+// Units that exist as skills in an open course link there.
+const known = new Set(courses.flatMap((c: any) => (c.units ?? []).flatMap((un: any) => un.skills)));
+---
+<Base title="Roadmaps" active="Roadmaps">
+  <div class="wrap" style="padding-top: 56px">
+    <p class="caps">Roadmaps</p>
+    <h1 class="title" style="margin-top: 12px">Pick a job. We'll route the path.</h1>
+    <p class="lead" style="margin: 14px 0 0; max-width: 620px">Every unit the role needs, in order, with how well you know each one.</p>
+    <div class="tabs" role="tablist" aria-label="Roles" style="margin-top: 32px" data-tabs>
+      {roadmaps.map((r, i) => (
+        <button type="button" role="tab" class="tab" id={`tab-${r.id}`} aria-controls={`panel-${r.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-role={r.id}>{r.name}</button>
+      ))}
+    </div>
+
+    {roadmaps.map((r, i) => {
+      const all = r.stages.flatMap((s) => s.units);
+      return (
+        <section class="panel" role="tabpanel" id={`panel-${r.id}`} aria-labelledby={`tab-${r.id}`} hidden={i !== 0} data-panel={r.id}>
+          <div>
+            <h2 class="h2">{r.name} engineer</h2>
+            <p class="muted" style="margin: 8px 0 0; max-width: 620px; font-size: 17px; line-height: 1.6">{r.what}</p>
+            <ol class="route">
+              {r.stages.map((s) => (
+                <li data-stage={s.units.map(skillId).join(',')}>
+                  <div class="via-col">
+                    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="9" fill="none" stroke="#3A4A5E" stroke-width="2"></circle><circle cx="14" cy="14" r="3.5" fill="#3A4A5E"></circle></svg>
+                    <span class="trace" aria-hidden="true"></span>
+                  </div>
+                  <div class="stage">
+                    <h3 class="h3">{s.name}</h3>
+                    <div class="stage-units">
+                      {s.units.map((name) => (
+                        known.has(name)
+                          ? <a class="unit" href={u('/courses/digital-logic/')}><Eye skill={name} />{name}</a>
+                          : <span class="unit planned"><Eye skill={name} />{name}</span>
+                      ))}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <aside>
+            <p class="caps">Your progress</p>
+            <p class="dots" style="margin: 8px 0 0; font-size: 40px" data-skill-count={all.map(skillId).join(',')}>0/{all.length}</p>
+            <p class="quiet" style="margin: 2px 0 0; font-size: 14px">units verified for this role</p>
+            <a class="btn go" href={u('/courses/digital-logic/')} style="margin-top: 20px">Start with digital logic</a>
+            <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line)">
+              <p class="caps">Portfolio projects</p>
+              <ol class="projects">
+                {r.projects.map((p, j) => <li><span class="mono quiet">{String(j + 1).padStart(2, '0')}</span>{p}</li>)}
+              </ol>
+            </div>
+            <div class="rule amber" style="margin-top: 32px">
+              <p class="caps" style="color: var(--amber)">Interview prep</p>
+              <p style="margin: 8px 0 0; font-size: 15px">{r.interview}</p>
+              <a href={u('/lab/')} style="display: inline-block; margin-top: 10px; font-size: 15px">Practise in the Lab →</a>
+            </div>
+          </aside>
+        </section>
+      );
+    })}
+  </div>
+</Base>
+
+<style>
+  .panel { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 72px; padding-top: 40px; }
+  .panel[hidden] { display: none; }
+  .route { list-style: none; margin: 36px 0 0; padding: 0; }
+  .route li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 24px; }
+  .via-col { display: flex; flex-direction: column; align-items: center; }
+  .trace { flex: 1 1 auto; width: 3px; min-height: 24px; background: #273242; }
+  .route li:last-child .trace { visibility: hidden; }
+  .route li.is-done .trace { background: var(--accent); }
+  .route li.is-done circle { stroke: var(--accent); fill: var(--accent); }
+  .route li.is-done circle + circle { fill: var(--bg); }
+  .stage { padding: 2px 0 36px; }
+  .stage-units { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px 28px; }
+  .unit { display: inline-flex; align-items: center; gap: 10px; min-height: 36px; color: var(--text); font-size: 15px; }
+  .unit.planned { color: var(--text2); }
+  .projects { list-style: none; margin: 12px 0 0; padding: 0; }
+  .projects li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; line-height: 1.5; }
+  .projects .mono { font-size: 12px; padding-top: 3px; }
+  @media (max-width: 900px) { .panel { grid-template-columns: 1fr; gap: 40px; } }
+</style>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-role]')];
+  function pick(id: string, focus = false) {
+    tabs.forEach((t) => {
+      const on = t.dataset.role === id;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on && focus) t.focus();
+    });
+    document.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => (p.hidden = p.dataset.panel !== id));
+    history.replaceState(null, '', `#${id}`);
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => pick(t.dataset.role!));
+    t.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        pick(n.dataset.role!, true);
+      }
+    });
+  });
+  const h = location.hash.slice(1);
+  if (tabs.some((t) => t.dataset.role === h)) pick(h);
+</script>

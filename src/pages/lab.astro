@@ -1,0 +1,259 @@
+---
+import Base from '../layouts/Base.astro';
+import { u, REPO } from '../lib/url.js';
+const START = `module edge_detect (
+  input  wire clk,
+  input  wire rst_n,
+  input  wire sig,
+  output wire pulse
+);
+  reg sig_d;
+
+  always @(posedge clk)
+    if (!rst_n) sig_d <= 1'b0;
+    else        sig_d <= sig;
+
+  assign pulse = sig & sig_d;
+endmodule`;
+---
+<Base title="Lab: rising-edge detector" active="Lab" footer={false}>
+  <div class="lab" data-lab data-start={START}>
+    <section class="problem" aria-labelledby="problem-title">
+      <p class="caps">Starter · sequential · <span style="color: var(--amber)">asked in interviews</span></p>
+      <h1 id="problem-title" style="margin-top: 12px; font-size: 28px; letter-spacing: -0.035em">Rising-edge detector</h1>
+      <p class="pbody">Make <span class="mono" style="color: var(--link)">pulse</span> go high for exactly one clock cycle each time <span class="mono" style="color: var(--blue)">sig</span> rises from 0 to 1. The register <span class="mono">sig_d</span> already holds last cycle's value of sig.</p>
+      <p class="caps" style="margin-top: 28px">Ports</p>
+      <table class="ports">
+        <tbody>
+          <tr><td class="mono">clk</td><td class="mono quiet">IN</td><td>Clock</td></tr>
+          <tr><td class="mono">rst_n</td><td class="mono quiet">IN</td><td>Reset when 0</td></tr>
+          <tr><td class="mono" style="color: var(--blue)">sig</td><td class="mono quiet">IN</td><td>Signal to watch</td></tr>
+          <tr><td class="mono" style="color: var(--link)">pulse</td><td class="mono quiet">OUT</td><td>One-cycle pulse per rising edge</td></tr>
+        </tbody>
+      </table>
+      <button type="button" class="disclose" aria-expanded="false" data-hint-btn="1">Hint 1 of 2<span class="quiet">Show</span></button>
+      <p class="rule amber hint" data-hint="1" hidden>An edge is a change between two moments. What should sig be now, and what should it have been last cycle?</p>
+      <button type="button" class="disclose" aria-expanded="false" data-hint-btn="2">Hint 2 of 2<span class="quiet">Show</span></button>
+      <p class="rule amber hint" data-hint="2" hidden>You want "sig is 1 now <em>and</em> sig was 0 last cycle". In Verilog, "not" is <span class="mono">~</span>.</p>
+      <p class="quiet" style="margin: 28px 0 0; font-size: 14px">Learn it first: <a href={u('/learn/digital-logic/d-flip-flop/')}>The D flip-flop</a></p>
+      <p class="quiet" style="margin: 10px 0 0; font-size: 13px; line-height: 1.6">This lab checks the <span class="mono">assign pulse = …;</span> line with Chiplore's small teaching simulator. Full Verilog in the browser (Icarus, Verilator) is on the <a href={REPO}>roadmap</a>.</p>
+    </section>
+
+    <section class="work" aria-label="Editor and results">
+      <div class="files">
+        <span class="mono active-file">edge_detect.v</span>
+        <span class="mono quiet" style="font-size: 13px">tests: 4 checks</span>
+        <div style="flex: 1 1 auto"></div>
+        <button type="button" class="btn sm" data-reset>Reset</button>
+        <button type="button" class="btn sm" data-run>Run tests</button>
+        <button type="button" class="btn go sm" data-submit>Submit</button>
+      </div>
+      <div class="editor" data-editor>
+        <pre data-gutter aria-hidden="true"></pre>
+        <div class="ed">
+          <pre data-hl aria-hidden="true"></pre>
+          <textarea spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Verilog code">{START}</textarea>
+        </div>
+      </div>
+
+      <div class="results">
+        <div class="tabs" role="tablist" aria-label="Results">
+          <button type="button" role="tab" class="tab" aria-selected="true" data-tab="tests"><span data-tests-label>Tests</span></button>
+          <button type="button" role="tab" class="tab" aria-selected="false" data-tab="waves">Waves</button>
+          <button type="button" role="tab" class="tab" aria-selected="false" data-tab="schematic">Schematic</button>
+          <button type="button" role="tab" class="tab" aria-selected="false" data-tab="console">Console</button>
+        </div>
+        <div data-pane="tests" role="tabpanel"><ul class="tests" data-tests></ul><p data-solved hidden class="solved" role="status"></p></div>
+        <div data-pane="waves" role="tabpanel" hidden>
+          <div class="waves" style="margin-top: 18px; grid-template-columns: 96px minmax(0, 1fr)">
+            <span></span>
+            <svg viewBox="0 0 640 12" preserveAspectRatio="none" style="height: 12px" aria-hidden="true"><path data-mismatch stroke="#F0697F" stroke-width="2" fill="none" vector-effect="non-scaling-stroke"></path></svg>
+            <span class="sig">clk</span>
+            <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path data-w="clk" fill="none" stroke="#8A94A6" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></svg>
+            <span class="sig" style="color: var(--blue)">sig</span>
+            <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path data-w="sig" fill="none" stroke="#9DB8FF" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg>
+            <span class="sig">sig_d</span>
+            <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path data-w="sigd" fill="none" stroke="#A9B2C1" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></svg>
+            <span class="sig" style="color: var(--red)" data-yours-label>your pulse</span>
+            <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path data-w="yours" fill="none" stroke="#F0697F" stroke-width="2" vector-effect="non-scaling-stroke"></path></svg>
+            <span class="sig" style="color: var(--link)">expected</span>
+            <svg viewBox="0 0 640 32" preserveAspectRatio="none" aria-hidden="true"><path data-w="exp" fill="none" stroke="#62D6A2" stroke-width="2" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"></path></svg>
+            <span></span>
+            <div class="wave-axis"><span>0</span><span>160</span><span>320</span><span>480</span><span>640 ns</span></div>
+          </div>
+          <p class="quiet" style="margin: 12px 0 0; font-size: 14px">Red brackets mark where your pulse and the expected pulse disagree.</p>
+        </div>
+        <div data-pane="schematic" role="tabpanel" hidden>
+          <svg class="schem" viewBox="0 0 560 150" role="img" aria-label="Synthesized circuit">
+            <g font-family="Geist Mono Variable, Geist Mono, monospace" font-size="12">
+              <text x="0" y="44" fill="#9DB8FF">sig</text><text x="0" y="128" fill="#8A94A6">clk</text>
+              <path d="M32 40H150M90 40V66H300" fill="none" stroke="#9DB8FF" stroke-width="1.5"></path>
+              <circle cx="90" cy="40" r="3" fill="#9DB8FF"></circle>
+              <path d="M32 124H160V98" fill="none" stroke="#8A94A6" stroke-width="1.5"></path>
+              <rect x="150" y="24" width="70" height="74" rx="4" fill="none" stroke="#A9B2C1" stroke-width="1.5"></rect>
+              <text x="160" y="44" fill="#A9B2C1">D</text><text x="203" y="44" fill="#A9B2C1">Q</text><text x="168" y="90" fill="#8A94A6">DFF</text>
+              <path d="M220 40H260V96H300" fill="none" stroke="#E7EAF0" stroke-width="1.5"></path>
+              <text x="226" y="32" fill="#E7EAF0">sig_d</text>
+              <rect x="300" y="50" width="90" height="62" rx="6" fill="none" stroke="#C3A6FF" stroke-width="1.5"></rect>
+              <text x="345" y="85" text-anchor="middle" fill="#C3A6FF">logic</text>
+              <path d="M390 81H450" stroke="#62D6A2" stroke-width="1.5" data-schem-out></path>
+              <text x="458" y="85" fill="#62D6A2" data-schem-out-label>pulse</text>
+            </g>
+          </svg>
+          <p class="muted" style="margin: 10px 0 0; font-size: 14px" data-schem-text></p>
+        </div>
+        <div data-pane="console" role="tabpanel" hidden><pre class="console" data-console></pre></div>
+      </div>
+      <div class="status mono"><span>TEACHING SIMULATOR · SINGLE-BIT EXPRESSIONS</span><span>RUNS IN YOUR BROWSER · NOTHING UPLOADED</span></div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .lab { display: grid; grid-template-columns: 420px minmax(0, 1fr); min-height: calc(100vh - 65px); }
+  .problem { padding: 32px 32px 40px; border-right: 1px solid var(--line); }
+  .pbody { margin: 14px 0 0; font-size: 16px; line-height: 1.65; color: var(--body); }
+  .ports { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 14px; }
+  .ports td { padding: 9px 8px 9px 0; border-top: 1px solid var(--line); color: var(--text2); }
+  .ports tr:last-child td { border-bottom: 1px solid var(--line); }
+  .ports td:first-child { color: var(--text); }
+  .ports td.quiet { color: var(--text3); font-size: 12px; }
+  .disclose { margin-top: 20px; width: 100%; min-height: 46px; display: flex; align-items: center; justify-content: space-between; padding: 0; border: 0; border-bottom: 1px solid var(--line); background: none; font-weight: 600; font-size: 15px; cursor: pointer; }
+  .disclose + .disclose, .hint + .disclose { margin-top: 6px; }
+  .disclose span { font-weight: 400; font-size: 14px; }
+  .hint { margin: 14px 0 0; font-size: 15px; }
+  .work { display: flex; flex-direction: column; min-width: 0; }
+  .files { display: flex; align-items: center; gap: 16px; padding: 0 20px; min-height: 52px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .active-file { display: inline-flex; align-items: center; height: 52px; font-size: 13px; box-shadow: inset 0 -2px 0 var(--accent); }
+  .work .editor { flex: 1 1 auto; min-height: 340px; padding-top: 18px; }
+  .results { border-top: 1px solid var(--line); padding: 0 20px 22px; min-height: 270px; }
+  .results .tab { height: 44px; font-size: 14px; }
+  .tests { list-style: none; margin: 6px 0 0; padding: 0; }
+  .tests :global(li) { display: flex; align-items: center; gap: 14px; min-height: 46px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .tests :global(.detail) { display: block; margin-top: 2px; font-family: var(--mono); font-size: 13px; color: var(--red); }
+  .tests :global(a) { margin-left: auto; font-size: 14px; }
+  .solved { margin: 16px 0 0; color: var(--link); font-size: 16px; }
+  .schem { width: 100%; max-width: 560px; height: auto; margin-top: 18px; }
+  .console { margin: 16px 0 0; font-size: 13px; line-height: 1.8; color: var(--body); white-space: pre-wrap; }
+  .status { display: flex; gap: 24px; flex-wrap: wrap; padding: 8px 20px; border-top: 1px solid var(--line); font-size: 11px; letter-spacing: .04em; color: var(--text3); }
+  @media (max-width: 1000px) { .lab { grid-template-columns: 1fr; } .problem { border-right: 0; border-bottom: 1px solid var(--line); } }
+</style>
+
+<script>
+  import { compile, extract, clockPath, signalPath, SimError } from '../lib/bitsim.js';
+  import { mountEditor } from '../scripts/editor.js';
+  import { raise } from '../scripts/progress.js';
+
+  const root = document.querySelector<HTMLElement>('[data-lab]')!;
+  const $ = (s: string) => root.querySelector(s) as any;
+  const ed = mountEditor($('[data-editor]'));
+
+  // Stimulus: sig changes between clock edges; sig_d samples it on each rising edge (40, 120, ...).
+  const SIG: [number, number][] = [[0, 0], [125, 1], [365, 0], [445, 1], [525, 0]];
+  const EDGES = Array.from({ length: 8 }, (_, i) => 40 + 80 * i);
+  const at = (pts: [number, number][], t: number) => { let v = pts[0][1]; for (const [tt, vv] of pts) if (tt <= t) v = vv; return v; };
+  const SIGD: [number, number][] = [[0, 0], ...EDGES.map((t) => [t, at(SIG, t - 0.001)] as [number, number])];
+  const expected = (t: number) => at(SIG, t) & (at(SIGD, t) ^ 1);
+  const TIMES = [...new Set([0, ...SIG.map((p) => p[0]), ...EDGES])].sort((a, b) => a - b);
+  const TESTS = [
+    { name: 'No pulse while sig stays low', at: [10, 60, 100] },
+    { name: 'Pulse on a rising edge', at: [130, 450] },
+    { name: 'Pulse lasts exactly one cycle', at: [210, 300] },
+    { name: 'No pulse on a falling edge', at: [370, 530] },
+  ];
+
+  $('[data-w="clk"]').setAttribute('d', clockPath(80, 640));
+  $('[data-w="sig"]').setAttribute('d', signalPath(SIG, 640));
+  $('[data-w="sigd"]').setAttribute('d', signalPath(SIGD, 640));
+  $('[data-w="exp"]').setAttribute('d', signalPath(TIMES.map((t) => [t, expected(t)]), 640));
+
+  const showTab = (id: string) => {
+    root.querySelectorAll('[data-tab]').forEach((t: any) => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+    root.querySelectorAll<HTMLElement>('[data-pane]').forEach((p) => (p.hidden = p.dataset.pane !== id));
+  };
+  root.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((t) => t.addEventListener('click', () => showTab(t.dataset.tab!)));
+
+  function run(submit = false) {
+    const log: string[] = [];
+    const list = $('[data-tests]');
+    const solved = $('[data-solved]');
+    solved.hidden = true;
+    let fn: (e: any) => number;
+    let exprText = '';
+    try {
+      exprText = extract(ed.value, 'pulse', 'assign').trim();
+      fn = compile(exprText, ['sig', 'sig_d', 'rst_n']);
+      log.push('$ chiplore-sim edge_detect.v        ok');
+    } catch (err) {
+      const msg = err instanceof SimError ? err.message : 'Something went wrong.';
+      list.innerHTML = `<li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0697F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Couldn't compile<span class="detail">${msg}</span></span></li>`;
+      $('[data-tests-label]').textContent = 'Tests 0/4';
+      $('[data-console]').textContent = `$ chiplore-sim edge_detect.v\nerror: ${msg}`;
+      showTab('tests');
+      return;
+    }
+    const pulse = (t: number) => fn({ sig: at(SIG, t), sig_d: at(SIGD, t), rst_n: 1 });
+    let passed = 0;
+    list.innerHTML = '';
+    for (const test of TESTS) {
+      const bad = test.at.find((t) => pulse(t) !== expected(t));
+      const li = document.createElement('li');
+      if (bad === undefined) {
+        passed++;
+        li.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3FBF86" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Passed"><path d="M4 12.5l5 5L20 6.5"/></svg><span>${test.name}</span>`;
+      } else {
+        li.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F0697F" stroke-width="2" stroke-linecap="round" role="img" aria-label="Failed" style="flex:none"><path d="M6 6l12 12M18 6L6 18"/></svg><span>${test.name}<span class="detail">at ${bad} ns: expected pulse = ${expected(bad)}, got ${pulse(bad)}</span></span><a href="#" data-to-waves>Show in waves</a>`;
+      }
+      list.appendChild(li);
+    }
+    list.querySelectorAll('[data-to-waves]').forEach((a: any) => a.addEventListener('click', (e: Event) => { e.preventDefault(); showTab('waves'); }));
+    $('[data-tests-label]').textContent = `Tests ${passed}/4`;
+    log.push(`$ run tests                           4 tests: ${passed} passed, ${4 - passed} failed`);
+
+    // Waves + mismatch brackets
+    const yours = TIMES.map((t) => [t, pulse(t)] as [number, number]);
+    $('[data-w="yours"]').setAttribute('d', signalPath(yours, 640));
+    let m = '';
+    for (let i = 0; i < TIMES.length; i++) {
+      const t0 = TIMES[i], t1 = TIMES[i + 1] ?? 640;
+      if (pulse(t0) !== expected(t0)) m += `M${t0} 6H${t1}M${t0} 1V11M${t1} 1V11`;
+    }
+    $('[data-mismatch]').setAttribute('d', m || 'M0 0');
+    const ok = passed === 4;
+    $('[data-yours-label]').style.color = ok ? 'var(--link)' : 'var(--red)';
+    $('[data-w="yours"]').setAttribute('stroke', ok ? '#62D6A2' : '#F0697F');
+
+    // Schematic
+    $('[data-schem-out]').setAttribute('stroke', ok ? '#62D6A2' : '#F0697F');
+    $('[data-schem-out-label]').setAttribute('fill', ok ? '#62D6A2' : '#F0697F');
+    $('[data-schem-text]').textContent = ok
+      ? `1 flip-flop and a little logic computing ${exprText}. That's the whole edge detector.`
+      : `1 flip-flop and a little logic computing ${exprText}. Right parts, wrong logic: pulse needs sig now and not sig last cycle.`;
+    log.push(`$ synth                               1 DFF, logic: ${exprText}`);
+    $('[data-console]').textContent = log.join('\n');
+    showTab('tests');
+
+    if (submit) {
+      solved.hidden = false;
+      if (ok) {
+        solved.style.color = 'var(--link)';
+        solved.textContent = 'Solved. All four checks pass. This is a classic interview question, and you now know why the inverter matters.';
+        raise('the-d-flip-flop', 2);
+      } else {
+        solved.style.color = 'var(--red)';
+        solved.textContent = `${4 - passed} check${4 - passed === 1 ? '' : 's'} still failing. Open the waves to see exactly where.`;
+      }
+    }
+  }
+
+  $('[data-run]').addEventListener('click', () => run(false));
+  $('[data-submit]').addEventListener('click', () => run(true));
+  $('[data-reset]').addEventListener('click', () => { ed.value = root.dataset.start!; run(false); });
+  root.querySelectorAll<HTMLButtonElement>('[data-hint-btn]').forEach((b) => b.addEventListener('click', () => {
+    const p = root.querySelector<HTMLElement>(`[data-hint="${b.dataset.hintBtn}"]`)!;
+    p.hidden = !p.hidden;
+    b.setAttribute('aria-expanded', String(!p.hidden));
+    b.querySelector('span')!.textContent = p.hidden ? 'Show' : 'Hide';
+  }));
+  run(false);
+</script>

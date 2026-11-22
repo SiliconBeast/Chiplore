@@ -1,0 +1,45 @@
+---
+title: Clocks and edges
+course: digital-logic
+unit: 2
+order: 1
+minutes: 6
+art: clock
+skill: Clocks and edges
+summary: A clock is a signal that ticks between 0 and 1 forever. Hardware does its work on the ticks.
+next:
+  title: The D flip-flop
+  href: /learn/digital-logic/d-flip-flop/
+---
+import ClockDiagram from '../../../components/ClockDiagram.astro';
+import Note from '../../../components/Note.astro';
+import Quiz from '../../../components/Quiz.astro';
+
+Gates answer instantly, which is a problem: a long chain of them settles at different times, and halfway through the answer is garbage. Hardware fixes this with a **clock**.
+
+## The heartbeat
+
+A clock is a wire that switches between 0 and 1 at a steady rate, forever. Every part of a design agrees to only *look* at its inputs at one moment of each tick. In between, signals are allowed to wobble and settle.
+
+<ClockDiagram />
+
+<Note term="Rising edge">The instant the clock goes from 0 to 1. In Verilog it's written <code>posedge clk</code>. Most hardware acts on rising edges.</Note>
+
+## Period and frequency
+
+The **period** *T* is the time from one rising edge to the next. The **frequency** is how many periods fit in a second: *f* = 1 / *T*.
+
+A 100 MHz clock ticks 100 million times a second, so its period is 10 ns. A 3 GHz CPU core has a period of about 0.33 ns. In that time light travels roughly 10 cm.
+
+## Why edges matter
+
+Because everything samples on the same edge, millions of parts can agree on what happened during one cycle. The next lesson shows the part that does the sampling: the flip-flop.
+
+<Quiz
+  skill="Clocks and edges"
+  question="A clock runs at 50 MHz. What is its period?"
+  options={['50 ns', '20 ns', '2 ns', '0.5 ns']}
+  answer={1}
+  right="Right. T = 1 / 50,000,000 s = 20 ns."
+  wrong="Not quite. Use T = 1 / f, with f = 50,000,000 per second."
+/>

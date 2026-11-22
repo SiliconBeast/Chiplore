@@ -1,0 +1,53 @@
+---
+title: What a logic gate really is
+course: digital-logic
+unit: 1
+order: 1
+minutes: 8
+art: gate
+skill: Logic gates
+summary: A gate is a tiny circuit that answers a yes/no question about its inputs. Five of them build every computer.
+next:
+  title: Clocks and edges
+  href: /learn/digital-logic/clocks-and-edges/
+---
+import GatePlay from '../../../components/GatePlay.astro';
+import Note from '../../../components/Note.astro';
+import Quiz from '../../../components/Quiz.astro';
+
+Every chip you have ever used, from the one in your phone to the one in a microwave, is built from one idea repeated billions of times: a **logic gate**.
+
+## Two voltages, two answers
+
+Inside a chip, a wire is either near the supply voltage or near 0 V. We call those **1** and **0**. A gate is a small circuit, a handful of transistors (a two-input NAND uses four), that looks at its input wires and drives its output wire to 1 or 0.
+
+<Note term="Bit">One wire that is either 0 or 1. Eight of them side by side make a byte.</Note>
+
+Each kind of gate answers a different yes/no question:
+
+- **AND** is 1 only when *all* its inputs are 1.
+- **OR** is 1 when *any* input is 1.
+- **XOR** is 1 when the inputs *differ*.
+- **NOT** flips its one input.
+- **NAND** is AND followed by NOT. Real chips use it everywhere because it takes the fewest transistors.
+
+## Try it
+
+Flip the inputs and watch each gate answer. The matching row of the truth table lights up.
+
+<GatePlay />
+
+A **truth table** lists every combination of inputs and the output for each. Two inputs give four rows; three inputs give eight. That's how engineers describe a gate without drawing a single transistor.
+
+## Why this matters
+
+Put a few gates together and you get an adder. Put adders together and you get the part of a CPU that does arithmetic. Add a way to *remember* a value, which is the next lesson, and you have everything a computer needs.
+
+<Quiz
+  skill="Logic gates"
+  question="a is 1 and b is 0. Which gate outputs 1?"
+  options={['AND', 'XOR', 'NOT a', 'None of them']}
+  answer={1}
+  right="Right. The inputs differ, so XOR is 1. AND needs both to be 1."
+  wrong="Not quite. Set a to 1 and b to 0 above and look at the lit outputs."
+/>
