@@ -1,0 +1,24 @@
+---
+// A section divider drawn as a 4-bit bus that jogs and lands on vias. Draws in when scrolled to.
+interface Props { label?: string; flip?: boolean }
+const { label, flip = false } = Astro.props;
+const W = 1200;
+const jog = flip ? 820 : 380;
+const lines = [0, 1, 2, 3].map((i) => {
+  const y1 = 8 + i * 7, y2 = 30 + i * 7;
+  return `M0 ${y1}H${jog - 30 + i * 7}L${jog - 8 + i * 7} ${y2}H${W}`;
+});
+---
+<div class="bus wrap" aria-hidden="true">
+  <svg viewBox={`0 0 ${W} 60`} preserveAspectRatio="none" data-draw>
+    {lines.map((d, i) => <path d={d} pathLength="1" fill="none" stroke={i === 1 ? '#3FBF86' : '#273242'} stroke-width="1.5" vector-effect="non-scaling-stroke" style={`transition-delay: ${i * 90}ms`}></path>)}
+  </svg>
+  {label && <span class="bus-label px">{label}</span>}
+</div>
+
+<style>
+  .bus { position: relative; height: 60px; margin-top: 8px; margin-bottom: 8px; }
+  .bus svg { width: 100%; height: 60px; overflow: visible; }
+  .bus-label { position: absolute; right: 32px; top: 0; font-size: 12px; letter-spacing: .1em; color: var(--text3); background: var(--bg); padding: 0 8px; }
+  @media (max-width: 720px) { .bus-label { right: 20px; } }
+</style>

@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import TraceField from '../components/TraceField.astro';
+import { u } from '../lib/url.js';
+---
+<Base title="Page not found">
+  <section class="lost">
+    <TraceField seed={404} fade="left" />
+    <div class="wrap lost-in">
+      <p class="kicker" data-scramble="intro">Error 404</p>
+      <h1 class="display" style="margin-top: 14px">Signal <span class="it hl">lost</span>.</h1>
+      <svg class="x-wave" viewBox="0 0 640 60" aria-hidden="true" data-draw>
+        <defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V8" stroke="#F0697F" stroke-width="1.5"></path></pattern></defs>
+        <path pathLength="1" d="M0 50H60V10H140V50H200V10H300" fill="none" stroke="#3FBF86" stroke-width="2"></path>
+        <rect class="via" x="300" y="10" width="340" height="40" fill="url(#hatch)" opacity=".5"></rect>
+        <path pathLength="1" d="M300 10H640M300 50H640" fill="none" stroke="#F0697F" stroke-width="2"></path>
+      </svg>
+      <p class="lead" style="max-width: 520px">This page went to <b>X</b>: nothing is driving it. Probably a broken link, or a lesson that hasn't been written yet.</p>
+      <div style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap">
+        <a class="btn go" href={u('/')}>Back to the start <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn" href={u('/courses/')}>All courses</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .lost { position: relative; overflow: hidden; min-height: 70vh; }
+  .lost-in { position: relative; z-index: 1; padding-top: 96px; padding-bottom: 96px; }
+  .x-wave { width: min(640px, 100%); height: 60px; margin: 28px 0 20px; }
+</style>

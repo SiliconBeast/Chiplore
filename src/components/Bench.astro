@@ -1,0 +1,152 @@
+---
+// Three tiny things to poke at on the home page: a gate you can flip, a skill eye you can train,
+// and a wafer you can tape out.
+import { glyph } from '../lib/eye.js';
+const g0 = glyph(1);
+// Dies that fit inside a round wafer
+const dies: { x: number; y: number }[] = [];
+for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
+  const cx = 30 + x * 20 + 9, cy = 30 + y * 20 + 9;
+  if (Math.hypot(cx - 120, cy - 120) < 84) dies.push({ x: 30 + x * 20, y: 30 + y * 20 });
+}
+---
+<div class="bench">
+  <!-- 1. Flip two switches, watch an AND gate light an LED -->
+  <figure class="cell" data-and>
+    <svg viewBox="0 0 260 150" class="draw" role="img" aria-label="Two switches feeding an AND gate that drives an LED">
+      <g class="sw" data-sw="a" tabindex="0" role="switch" aria-checked="false" aria-label="Input a">
+        <rect x="8" y="22" width="44" height="26" rx="13" class="sw-body"></rect><circle cx="21" cy="35" r="9" class="sw-knob"></circle>
+        <text x="30" y="16" class="lbl">a</text>
+      </g>
+      <g class="sw" data-sw="b" tabindex="0" role="switch" aria-checked="false" aria-label="Input b">
+        <rect x="8" y="98" width="44" height="26" rx="13" class="sw-body"></rect><circle cx="21" cy="111" r="9" class="sw-knob"></circle>
+        <text x="30" y="142" class="lbl">b</text>
+      </g>
+      <path class="wire" data-w="a" d="M52 35H86V62H110"></path>
+      <path class="wire" data-w="b" d="M52 111H86V88H110"></path>
+      <path class="gate" d="M110 50H136A25 25 0 0 1 136 100H110Z"></path>
+      <text x="118" y="80" class="lbl dim">&amp;</text>
+      <path class="wire" data-w="y" d="M161 75H206"></path>
+      <circle cx="218" cy="75" r="12" class="led"></circle>
+      <circle cx="218" cy="75" r="22" class="glow"></circle>
+      <path d="M218 87V112M212 112H224" class="gnd"></path>
+    </svg>
+    <figcaption><span class="px" data-and-out>Y = 0</span><span class="quiet">Flip both switches</span></figcaption>
+  </figure>
+
+  <!-- 2. Train a skill: the eye opens as you practise -->
+  <figure class="cell" data-eyelab>
+    <svg viewBox="0 0 40 24" class="eye-big" aria-hidden="true">
+      <path d="M0 12H40" stroke="#1F2937" stroke-width=".3" fill="none"></path>
+      <path data-eyepath d={g0.d} fill="none" stroke={g0.color} stroke-width=".9" stroke-linecap="round"></path>
+    </svg>
+    <input type="range" min="0" max="4" step="1" value="1" aria-label="Practice level" data-eyelevel />
+    <figcaption><span class="px" data-eyename>{g0.label}</span><span class="quiet">Drag to practise</span></figcaption>
+  </figure>
+
+  <!-- 3. Tape out: sweep across the wafer to fab dies -->
+  <figure class="cell" data-wafer>
+    <svg viewBox="0 0 240 240" class="wafer" role="img" aria-label="A wafer of dies. Move across it to fabricate them.">
+      <circle cx="120" cy="120" r="96" class="wf"></circle>
+      <path d="M108 216h24" class="notch"></path>
+      {dies.map((d, i) => <rect x={d.x} y={d.y} width="18" height="18" rx="2" class="die" data-die={i}></rect>)}
+    </svg>
+    <figcaption><span class="px" data-fab>000/{String(dies.length).padStart(3, '0')}</span><span class="quiet">Sweep across to fab</span></figcaption>
+  </figure>
+</div>
+
+<style>
+  .bench { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 40px; margin-top: 36px; }
+  .cell { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .cell > svg { width: 100%; height: 170px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
+  figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; }
+  figcaption .px { font-size: 17px; color: var(--link); }
+
+  .lbl { font: 600 12px var(--mono); fill: var(--text3); text-anchor: middle; }
+  .lbl.dim { font-size: 16px; fill: var(--text3); text-anchor: start; }
+  .sw { cursor: pointer; outline: none; }
+  .sw-body { fill: var(--bg); stroke: var(--line3); stroke-width: 1.5; transition: fill var(--base) var(--ease), stroke var(--base) var(--ease); }
+  .sw-knob { fill: var(--text3); transition: transform var(--base) var(--ease), fill var(--base) var(--ease); }
+  .sw[aria-checked="true"] .sw-body { fill: #1B5E41; stroke: var(--accent); }
+  .sw[aria-checked="true"] .sw-knob { transform: translateX(18px); fill: #D9FBEA; }
+  .sw:hover .sw-body, .sw:focus-visible .sw-body { stroke: var(--link); }
+  .wire { fill: none; stroke: var(--line3); stroke-width: 2; stroke-linejoin: round; transition: stroke var(--base) var(--ease); }
+  .wire.on { stroke: var(--accent); stroke-dasharray: 6 4; animation: flow .6s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -10; } }
+  .gate { fill: var(--bg); stroke: var(--text2); stroke-width: 2; }
+  .led { fill: #2A1A1E; stroke: var(--line3); stroke-width: 1.5; transition: fill var(--base) var(--ease), stroke var(--base) var(--ease); }
+  .glow { fill: none; stroke: var(--accent); stroke-width: 1; opacity: 0; transition: opacity var(--base) var(--ease); }
+  [data-and].lit .led { fill: var(--accent); stroke: #D9FBEA; }
+  [data-and].lit .glow { opacity: .5; animation: ring 1.4s var(--ease) infinite; transform-origin: 218px 75px; }
+  @keyframes ring { from { transform: scale(.6); opacity: .7; } to { transform: scale(1.3); opacity: 0; } }
+  .gnd { stroke: var(--line3); stroke-width: 1.5; fill: none; }
+
+  .eye-big { padding: 18px 0 14px !important; }
+  .eye-big path[data-eyepath] { transition: d var(--morph) var(--ease), stroke var(--base) var(--ease), opacity var(--base); }
+  input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
+
+  .wf { fill: #10181F; stroke: var(--line3); stroke-width: 1.5; }
+  .notch { stroke: var(--bg); stroke-width: 6; }
+  .die { fill: #141C27; stroke: #273242; stroke-width: 1; transition: fill var(--morph) var(--ease), stroke var(--morph) var(--ease), transform var(--base) var(--ease); transform-box: fill-box; transform-origin: center; }
+  .die.fab { fill: #1B5E41; stroke: var(--accent); }
+  .die.fab:hover { transform: scale(1.15); }
+  .die.gold { fill: var(--gold); stroke: #F7D58C; }
+  .wafer { cursor: crosshair; }
+</style>
+
+<script>
+  import { glyph } from '../lib/eye.js';
+
+  // AND gate
+  document.querySelectorAll<HTMLElement>('[data-and]').forEach((fig) => {
+    const st: Record<string, boolean> = { a: false, b: false };
+    const out = fig.querySelector('[data-and-out]')!;
+    const sync = () => {
+      const y = st.a && st.b;
+      fig.querySelector('[data-w="a"]')!.classList.toggle('on', st.a);
+      fig.querySelector('[data-w="b"]')!.classList.toggle('on', st.b);
+      fig.querySelector('[data-w="y"]')!.classList.toggle('on', y);
+      fig.classList.toggle('lit', y);
+      out.textContent = `Y = ${y ? 1 : 0}`;
+    };
+    fig.querySelectorAll<SVGGElement>('[data-sw]').forEach((sw) => {
+      const flip = () => { const k = sw.dataset.sw!; st[k] = !st[k]; sw.setAttribute('aria-checked', String(st[k])); sync(); };
+      sw.addEventListener('click', flip);
+      sw.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } });
+    });
+  });
+
+  // Eye
+  document.querySelectorAll<HTMLElement>('[data-eyelab]').forEach((fig) => {
+    const path = fig.querySelector<SVGPathElement>('[data-eyepath]')!;
+    const name = fig.querySelector('[data-eyename]')!;
+    const input = fig.querySelector<HTMLInputElement>('[data-eyelevel]')!;
+    const set = () => {
+      const g = glyph(Number(input.value));
+      path.setAttribute('d', g.d); path.style.d = `path("${g.d}")`;
+      path.setAttribute('stroke', g.color); path.setAttribute('opacity', String(g.opacity));
+      name.textContent = g.label;
+    };
+    input.addEventListener('input', set);
+  });
+
+  // Wafer
+  document.querySelectorAll<HTMLElement>('[data-wafer]').forEach((fig) => {
+    const svg = fig.querySelector('svg')!;
+    const dies = [...fig.querySelectorAll<SVGRectElement>('.die')];
+    const count = fig.querySelector('[data-fab]')!;
+    const total = String(dies.length).padStart(3, '0');
+    const upd = () => {
+      const n = dies.filter((d) => d.classList.contains('fab')).length;
+      count.textContent = n === dies.length ? 'TAPED OUT' : `${String(n).padStart(3, '0')}/${total}`;
+      if (n === dies.length) dies.forEach((d, i) => setTimeout(() => d.classList.add('gold'), i * 12));
+    };
+    const hit = (e: PointerEvent) => {
+      const el = document.elementFromPoint(e.clientX, e.clientY) as SVGRectElement | null;
+      if (el?.classList?.contains('die') && !el.classList.contains('fab')) { el.classList.add('fab'); upd(); }
+    };
+    svg.addEventListener('pointermove', hit);
+    svg.addEventListener('pointerdown', hit);
+    svg.addEventListener('dblclick', () => { dies.forEach((d) => d.classList.remove('fab', 'gold')); upd(); });
+  });
+</script>

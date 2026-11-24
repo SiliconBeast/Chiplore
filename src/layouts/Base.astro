@@ -2,8 +2,10 @@
 import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import '@fontsource-variable/doto';
+import '@fontsource/instrument-serif/latin-400-italic.css';
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
+import TraceField from '../components/TraceField.astro';
 import { u, REPO } from '../lib/url.js';
 import { clockPath } from '../lib/bitsim.js';
 
@@ -41,6 +43,10 @@ const nav = [
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <link rel="icon" type="image/svg+xml" href={u('/favicon.svg')} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      try { if (sessionStorage.getItem('chiplore:pt') && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('pt-in'); } catch (e) {}
+    </script>
     <slot name="head" />
   </head>
   <body>
@@ -64,13 +70,14 @@ const nav = [
         </div>
         <div class="scan" aria-hidden="true">
           <svg viewBox="0 0 1600 10" preserveAspectRatio="none">
-            <path d={clk} fill="none" stroke="#1F2937" stroke-width="1.25" vector-effect="non-scaling-stroke"></path>
+            <path class="scan-track" d={clk} fill="none" stroke-width="1.25" vector-effect="non-scaling-stroke"></path>
             <path class="scan-live" pathLength="1" d={clk} fill="none" stroke="#3FBF86" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>
           </svg>
           <span class="scan-head"><span class="scan-pct" data-pct>000</span></span>
         </div>
       </header>
     )}
+    <div class="pt" aria-hidden="true"><canvas></canvas></div>
     <main id="main">
       <slot />
     </main>
@@ -87,15 +94,20 @@ const nav = [
             <a href={REPO}>GitHub</a>
           </div>
         </div>
-        <div class="wrap"><span class="footer-mark" aria-hidden="true">CHIPLORE</span></div>
+        <div class="footer-field">
+          <TraceField seed={23} density={0.8} fade="top" />
+          <div class="wrap"><span class="footer-mark" aria-hidden="true">CHIPLORE</span></div>
+        </div>
       </footer>
     )}
     <script>
       import { paint } from '../scripts/progress.js';
-      import { scrollProgress, scramble } from '../scripts/motion.js';
+      import { scrollProgress, scramble, scrollIn, pageTransitions } from '../scripts/motion.js';
       paint();
       scrollProgress();
       scramble();
+      scrollIn();
+      pageTransitions();
     </script>
   </body>
 </html>

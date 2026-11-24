@@ -20,6 +20,8 @@
   --sans: 'Geist Variable', 'Geist', system-ui, sans-serif;
   --mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
   --dots: 'Doto Variable', 'Doto', ui-monospace, monospace;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --hl: rgba(63, 191, 134, .26);
   --ease: cubic-bezier(.2, .8, .2, 1);
   --fast: 120ms;
   --base: 240ms;
@@ -28,13 +30,6 @@
   color-scheme: dark;
 }
 
-@view-transition { navigation: auto; }
-::view-transition-group(*) { animation-duration: var(--morph); animation-timing-function: var(--ease); }
-/* Page change: old page dims, new page scans in top-down in raster steps. Header never moves. */
-::view-transition-old(root) { animation: vtOut var(--base) var(--ease) both; }
-::view-transition-new(root) { animation: vtScan var(--morph) steps(9, end) both; }
-@keyframes vtOut { to { opacity: 0; } }
-@keyframes vtScan { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -169,6 +164,7 @@ a:hover > .art, .lift:hover .art { transform: translateY(-3px); }
 /* Scroll progress: a clock trace under the header that draws as you read, with a pixel % probe. */
 .scan { --p: 0; position: relative; height: 11px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg); }
 .scan svg { width: 100%; height: 10px; }
+.scan-track { stroke: #4A5668; }
 .scan-live { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p)); }
 .scan-head { position: absolute; top: -1px; bottom: -1px; left: calc(var(--p) * 100%); width: 1px; background: var(--link); }
 .scan-pct { position: absolute; top: 12px; left: 6px; font-size: 13px; letter-spacing: .08em; color: var(--link); padding: 2px 6px 1px; background: var(--bg); border: 1px solid var(--line2); border-radius: 3px; opacity: 0; transform: translateY(-3px); transition: opacity var(--base) var(--ease), transform var(--base) var(--ease); white-space: nowrap; }
@@ -182,10 +178,7 @@ html:not([data-scrolled]) .scan-pct { opacity: 0 !important; }
 .clk-live { stroke-dasharray: 1; stroke-dashoffset: 0; }
 @supports (animation-timeline: scroll()) {
   .reveal { stroke-dasharray: 1; animation: edgeDraw linear both; animation-timeline: view(); animation-range: entry 10% cover 40%; }
-  /* Sections settle in as they scroll into view */
-  .band > .wrap, .settle { animation: settle linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
 }
-@keyframes settle { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 720px) {
   .wrap { padding: 0 20px; }
@@ -196,9 +189,10 @@ html:not([data-scrolled]) .scan-pct { opacity: 0 !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; }
   .clk-live, .reveal { animation: none !important; stroke-dashoffset: 0; }
-  .band > .wrap, .settle { animation: none !important; opacity: 1; transform: none; }
   .blink::after { animation: none; }
-  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+  html.js .settle, html.js .band > .wrap { opacity: 1 !important; transform: none !important; }
+  .pt { display: none !important; }
+  .w { animation: none !important; }
 }
 
 /* Editor: highlighted <pre> under a transparent textarea */
@@ -212,5 +206,46 @@ html:not([data-scrolled]) .scan-pct { opacity: 0 !important; }
 .editor:focus-within { box-shadow: inset 2px 0 0 var(--accent); }
 
 /* Footer watermark sits flush at the bottom */
-.site-footer .wrap:last-child { padding-top: 0; padding-bottom: 0; overflow: hidden; }
+.footer-field { position: relative; overflow: hidden; }
+.footer-field .wrap { position: relative; z-index: 1; padding-top: 24px !important; padding-bottom: 0 !important; pointer-events: none; }
 .site-footer .footer-mark { margin: 0 0 -0.12em; }
+
+/* ---------- Type that isn't boring ---------- */
+.it { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+.display .it, .title .it { font-size: 1.12em; line-height: .9; color: var(--text); }
+.pxw { font-family: var(--dots); font-weight: 900; letter-spacing: .02em; color: var(--accent); font-size: 1.04em; display: inline-block; }
+.pxw:hover { animation: flick 420ms steps(1) 1; }
+@keyframes flick { 0%, 40%, 80% { opacity: 1; } 20%, 60% { opacity: .35; } }
+/* "work" gets a square-wave underline that draws itself */
+.uwave { position: relative; display: inline-block; white-space: nowrap; }
+.uwave svg { position: absolute; left: -2%; right: -2%; bottom: -.16em; width: 104%; height: .26em; overflow: visible; }
+.uwave path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: edgeDraw 1.1s var(--ease) .9s both; }
+.uwave:hover path { animation: edgeRedraw .7s var(--ease) both; }
+
+/* Words rise in one after another */
+.w { display: inline-block; animation: wordIn var(--slow) var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms + 120ms); }
+@keyframes wordIn { from { opacity: 0; transform: translateY(.35em); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* Marker highlight that sweeps in under the cursor */
+.hl, .prose strong, .prose em, .lead b {
+  background: linear-gradient(var(--hl), var(--hl)) no-repeat 0 88% / 0% 42%;
+  transition: background-size var(--morph) var(--ease), color var(--base) var(--ease);
+  border-radius: 2px; padding: 0 .08em; margin: 0 -.08em; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.hl:hover, .prose strong:hover, .prose em:hover, .lead b:hover { background-size: 100% 42%; color: var(--text); }
+.lead b { font-weight: 600; color: var(--text); }
+.display .hl { background-position: 0 92%; }
+
+/* Scroll-in (IntersectionObserver, works everywhere) */
+html.js .settle, html.js .band > .wrap { opacity: 0; transform: translateY(18px); transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); }
+html.js .settle.in, html.js .band > .wrap.in { opacity: 1; transform: none; }
+[data-draw] path, [data-draw] line, [data-draw] polyline { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s var(--ease); }
+[data-draw].in path, [data-draw].in line, [data-draw].in polyline { stroke-dashoffset: 0; }
+[data-draw] .via { opacity: 0; transition: opacity var(--base) var(--ease) 1s; }
+[data-draw].in .via { opacity: 1; }
+
+/* Page transition: a pixel dissolve over the content (header stays) */
+.pt { position: fixed; left: 0; right: 0; bottom: 0; top: var(--pt-top, 76px); z-index: 15; pointer-events: none; }
+.pt canvas { width: 100%; height: 100%; display: block; }
+html.pt-in .pt { background: var(--bg); }
+.footer-field .footer-mark { pointer-events: auto; }

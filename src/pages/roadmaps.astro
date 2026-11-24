@@ -9,7 +9,7 @@ const known = new Set(courses.flatMap((c: any) => (c.units ?? []).flatMap((un: a
 <Base title="Roadmaps" active="Roadmaps">
   <div class="wrap" style="padding-top: 56px">
     <p class="kicker" data-scramble>Roadmaps</p>
-    <h1 class="title" style="margin-top: 12px">Pick a job. We'll route the path.</h1>
+    <h1 class="title" style="margin-top: 12px">Pick a job. We'll <span class="it hl">route</span> the path.</h1>
     <p class="lead" style="margin: 14px 0 0; max-width: 620px">Every unit the role needs, in order, with how well you know each one.</p>
     <div class="tabs" role="tablist" aria-label="Roles" style="margin-top: 32px" data-tabs>
       {roadmaps.map((r, i) => (
