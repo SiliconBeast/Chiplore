@@ -1,6 +1,6 @@
 # Contributing to Chiplore
 
-Thanks for helping make hardware less scary. The most useful thing you can add is **one good lesson**.
+Thanks for helping make hardware more accessible. The most useful thing you can add is **one good lesson**.
 
 ## Write a lesson
 
