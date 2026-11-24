@@ -49,7 +49,7 @@ code, kbd, pre { font-family: var(--mono); }
 .caps { font-family: var(--mono); font-size: 12px; letter-spacing: .04em; color: var(--text3); text-transform: uppercase; margin: 0; }
 .dots { font-family: var(--dots); font-weight: 900; letter-spacing: .04em; }
 /* Pixel type: Doto. The dots swell when you point at them. */
-.kicker, .px, .sec-num, .wordmark, .scan-pct, .idx {
+.kicker, .pixel, .sec-num, .wordmark, .idx {
   font-family: var(--dots); font-weight: 900;
   transition: font-weight var(--base) var(--ease), color var(--fast) var(--ease);
 }
@@ -58,7 +58,7 @@ code, kbd, pre { font-family: var(--mono); }
 .kicker:hover, a:hover .kicker, a:hover .idx, h2:hover .sec-num { font-weight: 900; }
 .sec-num { font-weight: 600; display: block; margin-bottom: 10px; font-size: 15px; letter-spacing: .12em; color: var(--text3); }
 .sec-num b { color: var(--link); font-weight: inherit; }
-.px { font-size: 1.1em; letter-spacing: .06em; }
+.pixel { font-size: 1.1em; letter-spacing: .06em; }
 .idx { font-weight: 600; font-size: 20px; letter-spacing: .04em; color: var(--text3); }
 a:hover .idx { color: var(--link); }
 .blink::after { content: '_'; animation: blink 1.1s steps(1) infinite; }
@@ -144,7 +144,7 @@ a:hover > .art, .lift:hover .art { transform: translateY(-3px); }
 .site-footer .wrap { padding-top: 40px; padding-bottom: 56px; display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .footer-links { display: flex; gap: 24px; flex-wrap: wrap; font-size: 15px; }
 .footer-links a { color: var(--text2); }
-.footer-mark { display: block; margin-top: 48px; font-family: var(--dots); font-weight: 300; font-size: clamp(64px, 15.5vw, 196px); line-height: .8; letter-spacing: .02em; color: var(--line2); user-select: none; transition: font-weight var(--slow) var(--ease), color var(--slow) var(--ease); }
+.footer-mark { display: block; margin-top: 0; font-family: var(--dots); font-weight: 300; font-size: clamp(64px, 15.5vw, 196px); line-height: .8; letter-spacing: .02em; color: var(--line2); user-select: none; transition: font-weight var(--slow) var(--ease), color var(--slow) var(--ease); }
 .footer-mark:hover { font-weight: 900; color: var(--accent); }
 
 /* Waveforms */
@@ -161,20 +161,12 @@ a:hover > .art, .lift:hover .art { transform: translateY(-3px); }
 .code-wrap:focus-within { box-shadow: inset 0 0 0 1px var(--line3); }
 .kw { color: var(--purple); } .ty { color: var(--link); } .num { color: var(--amber); } .cm { color: var(--text3); }
 
-/* Scroll progress: a clock trace under the header that draws as you read, with a pixel % probe. */
-.scan { --p: 0; position: relative; height: 11px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg); }
-.scan svg { width: 100%; height: 10px; }
-.scan-track { stroke: #4A5668; }
-.scan-live { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p)); }
-.scan-head { position: absolute; top: -1px; bottom: -1px; left: calc(var(--p) * 100%); width: 1px; background: var(--link); }
-.scan-pct { position: absolute; top: 12px; left: 6px; font-size: 13px; letter-spacing: .08em; color: var(--link); padding: 2px 6px 1px; background: var(--bg); border: 1px solid var(--line2); border-radius: 3px; opacity: 0; transform: translateY(-3px); transition: opacity var(--base) var(--ease), transform var(--base) var(--ease); white-space: nowrap; }
-.scan-pct::after { content: '%'; }
-.scan:not(.idle) .scan-pct { opacity: 1; transform: none; }
-html:not([data-scrolled]) .scan-pct { opacity: 0 !important; }
-.scan.near-end .scan-pct { left: auto; right: 6px; }
-.scan.done .scan-live { stroke: var(--link); }
-.scan.done .scan-pct { color: var(--text); border-color: var(--accent); }
-.scan.idle .scan-live, .scan.idle .scan-head { opacity: 0; }
+/* Scroll progress: a grey clock trace under the header that turns green as you read. */
+.scan { --p: 0; position: relative; height: 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--bg); }
+.scan svg { display: block; width: 100%; height: 10px; }
+.scan-track { stroke: #3A4A5E; }
+.scan-fill { position: absolute; inset: 0; clip-path: inset(0 calc((1 - var(--p)) * 100%) 0 0); }
+.scan.idle .scan-fill { opacity: 0; }
 .clk-live { stroke-dasharray: 1; stroke-dashoffset: 0; }
 @supports (animation-timeline: scroll()) {
   .reveal { stroke-dasharray: 1; animation: edgeDraw linear both; animation-timeline: view(); animation-range: entry 10% cover 40%; }
@@ -206,8 +198,7 @@ html:not([data-scrolled]) .scan-pct { opacity: 0 !important; }
 .editor:focus-within { box-shadow: inset 2px 0 0 var(--accent); }
 
 /* Footer watermark sits flush at the bottom */
-.footer-field { position: relative; overflow: hidden; }
-.footer-field .wrap { position: relative; z-index: 1; padding-top: 24px !important; padding-bottom: 0 !important; pointer-events: none; }
+.site-footer .wrap:last-child { padding-top: 8px; padding-bottom: 0; overflow: hidden; display: block; }
 .site-footer .footer-mark { margin: 0 0 -0.12em; }
 
 /* ---------- Type that isn't boring ---------- */
@@ -216,11 +207,6 @@ html:not([data-scrolled]) .scan-pct { opacity: 0 !important; }
 .pxw { font-family: var(--dots); font-weight: 900; letter-spacing: .02em; color: var(--accent); font-size: 1.04em; display: inline-block; }
 .pxw:hover { animation: flick 420ms steps(1) 1; }
 @keyframes flick { 0%, 40%, 80% { opacity: 1; } 20%, 60% { opacity: .35; } }
-/* "work" gets a square-wave underline that draws itself */
-.uwave { position: relative; display: inline-block; white-space: nowrap; }
-.uwave svg { position: absolute; left: -2%; right: -2%; bottom: -.16em; width: 104%; height: .26em; overflow: visible; }
-.uwave path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: edgeDraw 1.1s var(--ease) .9s both; }
-.uwave:hover path { animation: edgeRedraw .7s var(--ease) both; }
 
 /* Words rise in one after another */
 .w { display: inline-block; animation: wordIn var(--slow) var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms + 120ms); }
@@ -248,4 +234,3 @@ html.js .settle.in, html.js .band > .wrap.in { opacity: 1; transform: none; }
 .pt { position: fixed; left: 0; right: 0; bottom: 0; top: var(--pt-top, 76px); z-index: 15; pointer-events: none; }
 .pt canvas { width: 100%; height: 100%; display: block; }
 html.pt-in .pt { background: var(--bg); }
-.footer-field .footer-mark { pointer-events: auto; }

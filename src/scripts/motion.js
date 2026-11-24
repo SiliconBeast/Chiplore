@@ -5,7 +5,6 @@ const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 export function scrollProgress() {
   const bar = document.querySelector('.scan');
   if (!bar) return;
-  const pct = bar.querySelector('[data-pct]');
   const root = document.documentElement;
   let queued = false;
   const update = () => {
@@ -15,10 +14,6 @@ export function scrollProgress() {
     bar.classList.toggle('idle', max < innerHeight * 0.5);
     const p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
     bar.style.setProperty('--p', p.toFixed(4));
-    pct.textContent = String(Math.round(p * 100)).padStart(3, '0');
-    bar.classList.toggle('done', p > 0.995);
-    bar.classList.toggle('near-end', p > 0.9);
-    root.toggleAttribute('data-scrolled', scrollY > 8);
   };
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
   addEventListener('scroll', queue, { passive: true });
@@ -75,44 +70,40 @@ export function scrollIn() {
 
 /* ---------- Page transition: pixel dissolve ---------- */
 const KEY = 'chiplore:pt';
-const CELL = 22;
-function grid(canvas) {
+const CELL = 16;
+const BG = '#0D131C';
+const smooth = (x) => x * x * (3 - 2 * x);
+/** Each cell fades on its own short ramp; starts are staggered along a diagonal sweep. */
+function run(canvas, cover, ms, done) {
   const r = canvas.getBoundingClientRect();
   const dpr = Math.min(2, devicePixelRatio || 1);
   canvas.width = Math.ceil(r.width * dpr); canvas.height = Math.ceil(r.height * dpr);
   const ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const cols = Math.ceil(r.width / CELL), rows = Math.ceil(r.height / CELL);
-  // Order: a diagonal raster sweep with jitter, so it reads as a scan, not noise.
+  const fade = ms * 0.45, spread = ms - fade;
   const cells = [];
-  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) cells.push({ x, y, k: (x / cols) * 0.55 + (y / rows) * 0.45 + Math.random() * 0.18 });
-  cells.sort((a, b) => a.k - b.k);
-  return { ctx, cells, w: r.width, h: r.height };
-}
-function run(canvas, cover, ms, done) {
-  const { ctx, cells, w, h } = grid(canvas);
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    const k = Math.min(1, Math.max(0, (x / cols) * 0.5 + (y / rows) * 0.35 + Math.random() * 0.15));
+    cells.push({ x: x * CELL, y: y * CELL, t: smooth(k) * spread });
+  }
   const t0 = performance.now();
-  if (!cover) { ctx.fillStyle = '#0D131C'; ctx.fillRect(0, 0, w, h); }
-  let drawn = 0;
-  const step = (now) => {
-    const k = Math.min(1, (now - t0) / ms);
-    const target = Math.floor(k * cells.length);
-    // Leading edge glows green, then settles to the page colour.
-    const edge = Math.max(0, drawn - Math.floor(cells.length * 0.06));
-    for (let i = edge; i < target; i++) {
-      const c = cells[i];
-      const lead = i >= drawn;
-      if (cover) {
-        ctx.fillStyle = '#0D131C'; ctx.fillRect(c.x * CELL, c.y * CELL, CELL, CELL);
-        if (lead) { ctx.fillStyle = Math.random() < .25 ? '#3FBF86' : '#1B5E41'; ctx.fillRect(c.x * CELL + 7, c.y * CELL + 7, CELL - 14, CELL - 14); }
-      }
-      else if (lead) { ctx.fillStyle = Math.random() < .25 ? '#3FBF86' : '#1B5E41'; ctx.fillRect(c.x * CELL + 7, c.y * CELL + 7, CELL - 14, CELL - 14); }
-      else ctx.clearRect(c.x * CELL, c.y * CELL, CELL, CELL);
+  const frame = (now) => {
+    const t = now - t0;
+    ctx.clearRect(0, 0, r.width, r.height);
+    for (const c of cells) {
+      let a = Math.min(1, Math.max(0, (t - c.t) / fade));
+      a = smooth(a);
+      const cov = cover ? a : 1 - a; // how much of the page this cell hides
+      if (cov <= 0) continue;
+      ctx.globalAlpha = cov; ctx.fillStyle = BG; ctx.fillRect(c.x, c.y, CELL, CELL);
+      const glint = cov * (1 - cov) * 4; // brightest mid-ramp
+      if (glint > 0.05) { ctx.globalAlpha = glint * 0.35; ctx.fillStyle = '#3FBF86'; ctx.fillRect(c.x + 6, c.y + 6, 4, 4); }
     }
-    drawn = target;
-    if (k < 1) requestAnimationFrame(step);
-    else { if (cover) { ctx.fillStyle = '#0D131C'; ctx.fillRect(0, 0, w, h); } else ctx.clearRect(0, 0, w, h); done?.(); }
+    ctx.globalAlpha = 1;
+    if (t < ms) requestAnimationFrame(frame);
+    else { if (cover) { ctx.fillStyle = BG; ctx.fillRect(0, 0, r.width, r.height); } else ctx.clearRect(0, 0, r.width, r.height); done?.(); }
   };
-  requestAnimationFrame(step);
+  requestAnimationFrame(frame);
 }
 export function pageTransitions() {
   const pt = document.querySelector('.pt');
@@ -126,7 +117,7 @@ export function pageTransitions() {
   if (root.classList.contains('pt-in')) {
     sessionStorage.removeItem(KEY);
     if (still()) root.classList.remove('pt-in');
-    else run(canvas, false, 420, null), requestAnimationFrame(() => root.classList.remove('pt-in'));
+    else { run(canvas, false, 560, null); requestAnimationFrame(() => root.classList.remove('pt-in')); }
   }
   addEventListener('pageshow', (e) => { if (e.persisted) { root.classList.remove('pt-in'); canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height); } });
   if (still()) return;
@@ -140,6 +131,6 @@ export function pageTransitions() {
     if (url.pathname === location.pathname && url.hash) return;
     e.preventDefault();
     setTop();
-    run(canvas, true, 280, () => { sessionStorage.setItem(KEY, '1'); location.href = url.href; });
+    run(canvas, true, 360, () => { sessionStorage.setItem(KEY, '1'); location.href = url.href; });
   });
 }

@@ -19,7 +19,7 @@ import { u } from '../../lib/url.js';
               <span style={`display: block; width: max-content; max-width: 100%; font-size: 18px; font-weight: 600; view-transition-name: title-${c.slug}`}>{c.title}</span>
               <span class="muted" style="display: block; margin-top: 3px; font-size: 15px">{c.blurb}</span>
             </span>
-            <span class="px" data-scramble style={`flex: none; font-size: 14px; color: ${c.status === 'open' ? 'var(--link)' : 'var(--text3)'}`}>{c.status === 'open' ? 'OPEN' : 'HELP WANTED'}</span>
+            <span class="pixel" data-scramble style={`flex: none; font-size: 14px; color: ${c.status === 'open' ? 'var(--link)' : 'var(--text3)'}`}>{c.status === 'open' ? 'OPEN' : 'HELP WANTED'}</span>
           </a>
         </li>
       ))}

@@ -1,6 +1,6 @@
 ---
 // A live PCB behind the content: grey traces, green pulses that run along them.
-// Move the cursor near a trace and current flows from there. Click to fire a burst.
+// Moving the cursor near a trace sends a pulse down it. Kept quiet on purpose: it's a backdrop.
 interface Props { seed?: number; density?: number; class?: string; fade?: 'left' | 'top' | 'none' }
 const { seed = 7, density = 1, class: cls = '', fade = 'left' } = Astro.props;
 ---
@@ -11,7 +11,7 @@ const { seed = 7, density = 1, class: cls = '', fade = 'left' } = Astro.props;
 <style>
   .tf { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
   .tf canvas { width: 100%; height: 100%; display: block; }
-  .fade-left { -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,.35) 38%, #000 70%); mask-image: linear-gradient(90deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,.35) 38%, #000 70%); }
+  .fade-left { -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 28%, rgba(0,0,0,.75) 78%); mask-image: linear-gradient(90deg, transparent 0%, transparent 28%, rgba(0,0,0,.75) 78%); }
   .fade-top { -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 45%); mask-image: linear-gradient(180deg, transparent 0%, #000 45%); }
 </style>
 
@@ -75,7 +75,6 @@ const { seed = 7, density = 1, class: cls = '', fade = 'left' } = Astro.props;
     type Pulse = { t: number; s: number; v: number; rev: boolean };
     let pulses: Pulse[] = [];
     const lastHit = new Map<number, number>();
-    let mouse: [number, number] | null = null;
     let visible = true, raf = 0, last = performance.now(), spawnAcc = 0;
 
     function build() {
@@ -91,28 +90,21 @@ const { seed = 7, density = 1, class: cls = '', fade = 'left' } = Astro.props;
       b.setTransform(dpr, 0, 0, dpr, 0, 0);
       b.lineCap = 'round'; b.lineJoin = 'round';
       for (const t of traces) {
-        b.strokeStyle = '#1F2937'; b.lineWidth = 2;
+        b.strokeStyle = '#161F2B'; b.lineWidth = 1.5;
         b.beginPath(); t.pts.forEach(([x, y], i) => (i ? b.lineTo(x, y) : b.moveTo(x, y))); b.stroke();
         for (const p of [t.pts[0], t.pts[t.pts.length - 1]]) {
-          b.fillStyle = '#0D131C'; b.strokeStyle = '#2A3647'; b.lineWidth = 1.5;
-          b.beginPath(); b.arc(p[0], p[1], 3.5, 0, Math.PI * 2); b.fill(); b.stroke();
+          b.fillStyle = '#0D131C'; b.strokeStyle = '#1C2634'; b.lineWidth = 1.25;
+          b.beginPath(); b.arc(p[0], p[1], 3, 0, Math.PI * 2); b.fill(); b.stroke();
         }
-      }
-      // A few pads
-      const r2 = rng(seed + 3);
-      for (let i = 0; i < traces.length / 6; i++) {
-        const t = traces[(r2() * traces.length) | 0]; const p = t.pts[0];
-        b.fillStyle = '#2A2414'; b.strokeStyle = '#5C4A22'; b.lineWidth = 1;
-        b.fillRect(p[0] - 6, p[1] - 4, 12, 8); b.strokeRect(p[0] - 6, p[1] - 4, 12, 8);
       }
       draw();
     }
 
     function fire(i: number, rev = Math.random() < 0.5) {
       const now = performance.now();
-      if ((lastHit.get(i) ?? 0) > now - 600) return;
+      if ((lastHit.get(i) ?? 0) > now - 1500) return;
       lastHit.set(i, now);
-      pulses.push({ t: i, s: 0, v: 260 + Math.random() * 220, rev });
+      pulses.push({ t: i, s: 0, v: 160 + Math.random() * 120, rev });
     }
 
     function draw() {
@@ -123,30 +115,26 @@ const { seed = 7, density = 1, class: cls = '', fade = 'left' } = Astro.props;
       ctx.lineCap = 'round';
       for (const p of pulses) {
         const t = traces[p.t];
-        const head = Math.min(p.s, t.len), tail = Math.max(0, p.s - 70);
+        const head = Math.min(p.s, t.len), tail = Math.max(0, p.s - 90);
         const steps = 10;
         for (let k = 0; k < steps; k++) {
           const a = tail + ((head - tail) * k) / steps, b2 = tail + ((head - tail) * (k + 1)) / steps;
           const pa = at(t, p.rev ? t.len - a : a), pb = at(t, p.rev ? t.len - b2 : b2);
-          ctx.strokeStyle = `rgba(63,191,134,${((k + 1) / steps) * 0.95})`; ctx.lineWidth = 2.2;
+          ctx.strokeStyle = `rgba(63,191,134,${((k + 1) / steps) * 0.45})`; ctx.lineWidth = 1.5;
           ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke();
         }
-        if (p.s <= t.len) { const h = at(t, p.rev ? t.len - head : head); ctx.fillStyle = '#D9FBEA'; ctx.beginPath(); ctx.arc(h[0], h[1], 2.2, 0, Math.PI * 2); ctx.fill(); }
+        if (p.s <= t.len) { const h = at(t, p.rev ? t.len - head : head); ctx.fillStyle = 'rgba(98,214,162,.6)'; ctx.beginPath(); ctx.arc(h[0], h[1], 1.6, 0, Math.PI * 2); ctx.fill(); }
         else { // arrived: via lights up
           const e = p.rev ? t.pts[0] : t.pts[t.pts.length - 1]; const k = Math.max(0, 1 - (p.s - t.len) / 120);
-          ctx.strokeStyle = `rgba(98,214,162,${k})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(e[0], e[1], 4 + (1 - k) * 6, 0, Math.PI * 2); ctx.stroke();
+          ctx.strokeStyle = `rgba(98,214,162,${k * 0.35})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(e[0], e[1], 3 + (1 - k) * 4, 0, Math.PI * 2); ctx.stroke();
         }
-      }
-      if (mouse) { // probe tip
-        ctx.strokeStyle = 'rgba(242,179,90,.55)'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.arc(mouse[0], mouse[1], 14, 0, Math.PI * 2); ctx.stroke();
       }
     }
 
     function tick(now: number) {
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
       spawnAcc += dt;
-      if (spawnAcc > 0.35 && traces.length) { spawnAcc = 0; fire((Math.random() * traces.length) | 0); }
+      if (spawnAcc > 1.1 && traces.length && pulses.length < 4) { spawnAcc = 0; fire((Math.random() * traces.length) | 0); }
       for (const p of pulses) p.s += p.v * dt;
       pulses = pulses.filter((p) => p.s < traces[p.t].len + 120);
       draw();
@@ -163,15 +151,7 @@ const { seed = 7, density = 1, class: cls = '', fade = 'left' } = Astro.props;
     host.addEventListener('pointermove', (e) => {
       const r = el.getBoundingClientRect();
       const x = e.clientX - r.left, y = e.clientY - r.top;
-      mouse = [x, y];
-      if (!still) near(x, y, 40).slice(0, 2).forEach((i) => fire(i));
-      if (still) draw();
-    });
-    host.addEventListener('pointerleave', () => { mouse = null; if (still) draw(); });
-    host.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('a, button, input, label')) return;
-      const r = el.getBoundingClientRect();
-      near(e.clientX - r.left, e.clientY - r.top, 110).forEach((i) => { lastHit.delete(i); fire(i); });
+      if (!still) near(x, y, 30).slice(0, 1).forEach((i) => fire(i));
     });
 
     new ResizeObserver(() => build()).observe(el);

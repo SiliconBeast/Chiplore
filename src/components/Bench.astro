@@ -31,7 +31,7 @@ for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
       <circle cx="218" cy="75" r="22" class="glow"></circle>
       <path d="M218 87V112M212 112H224" class="gnd"></path>
     </svg>
-    <figcaption><span class="px" data-and-out>Y = 0</span><span class="quiet">Flip both switches</span></figcaption>
+    <figcaption><span class="pixel" data-and-out>Y = 0</span><span class="quiet">Flip both switches</span></figcaption>
   </figure>
 
   <!-- 2. Train a skill: the eye opens as you practise -->
@@ -41,7 +41,7 @@ for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
       <path data-eyepath d={g0.d} fill="none" stroke={g0.color} stroke-width=".9" stroke-linecap="round"></path>
     </svg>
     <input type="range" min="0" max="4" step="1" value="1" aria-label="Practice level" data-eyelevel />
-    <figcaption><span class="px" data-eyename>{g0.label}</span><span class="quiet">Drag to practise</span></figcaption>
+    <figcaption><span class="pixel" data-eyename>{g0.label}</span><span class="quiet">Drag to practise</span></figcaption>
   </figure>
 
   <!-- 3. Tape out: sweep across the wafer to fab dies -->
@@ -51,7 +51,7 @@ for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
       <path d="M108 216h24" class="notch"></path>
       {dies.map((d, i) => <rect x={d.x} y={d.y} width="18" height="18" rx="2" class="die" data-die={i}></rect>)}
     </svg>
-    <figcaption><span class="px" data-fab>000/{String(dies.length).padStart(3, '0')}</span><span class="quiet">Sweep across to fab</span></figcaption>
+    <figcaption><span class="pixel" data-fab>000/{String(dies.length).padStart(3, '0')}</span><span class="quiet">Sweep across to fab</span></figcaption>
   </figure>
 </div>
 
@@ -60,7 +60,7 @@ for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
   .cell { margin: 0; display: flex; flex-direction: column; gap: 14px; }
   .cell > svg { width: 100%; height: 170px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
   figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; }
-  figcaption .px { font-size: 17px; color: var(--link); }
+  figcaption .pixel { font-size: 17px; color: var(--link); }
 
   .lbl { font: 600 12px var(--mono); fill: var(--text3); text-anchor: middle; }
   .lbl.dim { font-size: 16px; fill: var(--text3); text-anchor: start; }

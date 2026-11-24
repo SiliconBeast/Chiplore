@@ -86,8 +86,8 @@ const kindIcon: Record<string, string> = {
 
           {course.units.map((un: any, i: number) => (
             <section class="unit" id={`unit-${i + 1}`} aria-labelledby={`unit-${i + 1}-title`}>
-              <p class="caps">Unit {i + 1}</p>
-              <h2 id={`unit-${i + 1}-title`} class="h2" style="margin-top: 6px; font-size: 24px">{un.title}</h2>
+              <span class="sec-num" aria-hidden="true"><b>{String(i + 1).padStart(2, '0')}</b> / {String(course.units.length).padStart(2, '0')}</span>
+              <h2 id={`unit-${i + 1}-title`} class="h2" style="font-size: 24px">{un.title}</h2>
               <ul class="items">
                 {un.items.map((it: any) => (
                   <li>

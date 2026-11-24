@@ -13,7 +13,7 @@ const lines = [0, 1, 2, 3].map((i) => {
   <svg viewBox={`0 0 ${W} 60`} preserveAspectRatio="none" data-draw>
     {lines.map((d, i) => <path d={d} pathLength="1" fill="none" stroke={i === 1 ? '#3FBF86' : '#273242'} stroke-width="1.5" vector-effect="non-scaling-stroke" style={`transition-delay: ${i * 90}ms`}></path>)}
   </svg>
-  {label && <span class="bus-label px">{label}</span>}
+  {label && <span class="bus-label pixel">{label}</span>}
 </div>
 
 <style>
