@@ -4,7 +4,6 @@ import CourseArt from '../components/CourseArt.astro';
 import Zoom from '../components/Zoom.astro';
 import TraceField from '../components/TraceField.astro';
 import Bench from '../components/Bench.astro';
-import Bus from '../components/Bus.astro';
 import { courses, roadmaps } from '../data/courses.js';
 import { u } from '../lib/url.js';
 
@@ -30,14 +29,15 @@ const units = (c: any) => (c.units ? `${c.units.length} units` : 'Being written'
         <a class="btn go" href={u('/courses/digital-logic/')}>Start learning <span class="arrow" aria-hidden="true">→</span></a>
         <a class="btn" href={u('/roadmaps/')}>See roadmaps</a>
       </div>
-      <p class="pixel quiet" style="margin: 24px 0 0; font-size: 15px">No account · open source · always free</p>
+      <p class="pixel quiet tagline">No account · open source · free</p>
     </div>
     <div class="zoom-hold"><Zoom /></div>
   </div>
   </section>
 
-  <section class="wrap block" aria-labelledby="start-title">
-    <h2 id="start-title" class="h2"><span class="sec-num" aria-hidden="true"><b>01</b> / 04</span>Where are you <span class="it">starting</span> from?</h2>
+  <section class="sect band" aria-labelledby="start-title">
+  <div class="wrap">
+    <h2 id="start-title" class="h2 sect-title"><span class="sec-num" aria-hidden="true"><b>01</b> / 04</span>Where are you <span class="it">starting</span> from?</h2>
     <div class="two-col">
       {starts.map((s) => (
         <a class="row-link" href={s.href.startsWith('http') ? s.href : u(s.href)}>
@@ -47,22 +47,21 @@ const units = (c: any) => (c.units ? `${c.units.length} units` : 'Being written'
         </a>
       ))}
     </div>
+  </div>
   </section>
 
-  <Bus />
-  <section class="band" aria-labelledby="courses-title">
+  <section class="sect band" aria-labelledby="courses-title">
     <div class="wrap">
-      <h2 id="courses-title" class="h2"><span class="sec-num" aria-hidden="true"><b>02</b> / 04</span>Courses, <span class="it">gate to board</span></h2>
-      <p class="muted" style="margin: 8px 0 0; font-size: 17px">Start at the top and work down, or jump straight to what you need.</p>
+      <h2 id="courses-title" class="h2 sect-title"><span class="sec-num" aria-hidden="true"><b>02</b> / 04</span>Courses, <span class="it">gate to board</span></h2>
+      <p class="sect-sub">Start at the top and work down, or jump straight to what you need.</p>
       <div class="course-grid">
-        {courses.map((c, i) => (
+        {courses.map((c) => (
           <a class="course-card" href={u(`/courses/${c.slug}/`)}>
             <CourseArt name={c.art} vt={`art-${c.slug}`} />
             <span>
-              <span class="idx" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
               <span class="course-name" style={`view-transition-name: title-${c.slug}`}>{c.title}</span>
               <span class="muted course-blurb">{c.blurb}</span>
-              <span class="quiet course-meta">{c.meta} · {units(c)}{c.status === 'writing' ? ' · help wanted' : ''}</span>
+              <span class={`course-meta ${c.status === 'open' ? 'open' : ''}`}>{c.status === 'open' ? `Open now · ${units(c)}` : `${c.meta} · being written`}</span>
             </span>
           </a>
         ))}
@@ -70,23 +69,21 @@ const units = (c: any) => (c.units ? `${c.units.length} units` : 'Being written'
     </div>
   </section>
 
-  <Bus flip />
-  <section class="band" aria-labelledby="how-title">
+  <section class="sect band" aria-labelledby="how-title">
     <div class="wrap">
-      <h2 id="how-title" class="h2"><span class="sec-num" aria-hidden="true"><b>03</b> / 04</span>Hardware you can <span class="it">poke</span></h2>
-      <p class="muted" style="margin: 8px 0 0; font-size: 17px; max-width: 640px">Every lesson is built from things like these: <span class="hl">live circuits</span>, <span class="hl">skills drawn as eye diagrams</span>, and <span class="hl">projects that end in real silicon</span>. Go on, touch them.</p>
+      <h2 id="how-title" class="h2 sect-title"><span class="sec-num" aria-hidden="true"><b>03</b> / 04</span>Hardware you can <span class="it">poke</span></h2>
+      <p class="sect-sub">Every lesson is built from things like these: <span class="hl">live circuits</span>, <span class="hl">skills drawn as eye diagrams</span>, and <span class="hl">projects that end in real silicon</span>. Go on, touch them.</p>
       <Bench />
     </div>
   </section>
 
-  <Bus />
-  <section class="band" aria-labelledby="roles-title">
+  <section class="sect band" aria-labelledby="roles-title">
     <div class="wrap">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap">
-        <h2 id="roles-title" class="h2"><span class="sec-num" aria-hidden="true"><b>04</b> / 04</span>Roadmaps to <span class="it hl">real jobs</span></h2>
+      <div class="sect-row">
+        <h2 id="roles-title" class="h2 sect-title"><span class="sec-num" aria-hidden="true"><b>04</b> / 04</span>Roadmaps to <span class="it hl">real jobs</span></h2>
         <a href={u('/roadmaps/')} style="font-weight: 600; font-size: 15px">All {roadmaps.length} roadmaps</a>
       </div>
-      <div style="margin-top: 20px">
+      <div class="sect-body">
         {roadmaps.slice(0, 3).map((r) => (
           <a class="row-link" href={u(`/roadmaps/#${r.id}`)}>
             <span style="flex: 0 0 240px; font-size: 18px; font-weight: 600">{r.name} engineer</span>
@@ -107,18 +104,22 @@ const units = (c: any) => (c.units ? `${c.units.length} units` : 'Being written'
   .hero-text .lead { margin: 22px 0 0; max-width: 520px; font-size: 19px; }
   .hero-ctas { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
   .hero-ctas .btn { min-height: 48px; padding: 0 24px; font-size: 16px; }
-  .block { padding-bottom: 80px; }
-  .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); column-gap: 48px; margin-top: 8px; }
-  .band { padding: 40px 0 72px; }
-  .course-grid { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); gap: 40px 48px; }
+  .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); column-gap: 48px; margin-top: 24px; }
+  .sect { border-top: 1px solid var(--line); padding: 80px 0; }
+  .sect-title .sec-num { margin-bottom: 14px; }
+  .sect-sub { margin: 10px 0 0; max-width: 620px; font-size: 17px; line-height: 1.6; color: var(--text2); }
+  .sect-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .sect-row > a { font-weight: 600; font-size: 15px; padding-bottom: 4px; }
+  .sect-body { margin-top: 24px; }
+  .tagline { margin: 24px 0 0; font-size: 14px; letter-spacing: .06em; }
+  .course-grid { margin-top: 48px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); gap: 40px 48px; }
   .course-card { display: flex; gap: 22px; align-items: flex-start; color: var(--text); text-decoration: none; }
   .course-card:hover { text-decoration: none; }
   .course-card:hover .course-name { text-decoration: underline; text-decoration-color: var(--line3); text-underline-offset: 4px; }
   .course-name { display: block; width: max-content; max-width: 100%; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
   .course-blurb { display: block; margin-top: 4px; font-size: 15px; line-height: 1.55; }
-  .course-meta { display: block; margin-top: 8px; font-size: 13px; }
-  .three-col { margin-top: 36px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 40px; }
-  .feat-title { margin: 14px 0 0; font-size: 18px; }
-  .feat-body { margin: 8px 0 0; font-size: 16px; line-height: 1.6; }
-  @media (max-width: 960px) { .hero { grid-template-columns: 1fr; } }
+  .course-meta { display: block; margin-top: 10px; font-size: 13px; color: var(--text3); }
+  .course-meta.open { color: var(--link); font-weight: 600; }
+  @media (max-width: 960px) { .hero { grid-template-columns: 1fr; padding-top: 48px; padding-bottom: 56px; gap: 40px; } }
+  @media (max-width: 720px) { .sect { padding: 64px 0; } .course-grid { gap: 32px; } }
 </style>

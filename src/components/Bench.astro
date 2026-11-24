@@ -36,11 +36,13 @@ for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
 
   <!-- 2. Train a skill: the eye opens as you practise -->
   <figure class="cell" data-eyelab>
-    <svg viewBox="0 0 40 24" class="eye-big" aria-hidden="true">
-      <path d="M0 12H40" stroke="#1F2937" stroke-width=".3" fill="none"></path>
-      <path data-eyepath d={g0.d} fill="none" stroke={g0.color} stroke-width=".9" stroke-linecap="round"></path>
-    </svg>
-    <input type="range" min="0" max="4" step="1" value="1" aria-label="Practice level" data-eyelevel />
+    <div class="eye-frame">
+      <svg viewBox="-2 -1 44 26" class="eye-big" aria-hidden="true">
+        <path d="M-2 12H42" stroke="#1F2937" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"></path>
+        <path data-eyepath d={g0.d} fill="none" stroke={g0.color} stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+      </svg>
+      <input type="range" min="0" max="4" step="1" value="1" aria-label="Practice level" data-eyelevel />
+    </div>
     <figcaption><span class="pixel" data-eyename>{g0.label}</span><span class="quiet">Drag to practise</span></figcaption>
   </figure>
 
@@ -59,7 +61,7 @@ for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
   .bench { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 40px; margin-top: 36px; }
   .cell { margin: 0; display: flex; flex-direction: column; gap: 14px; }
   .cell > svg { width: 100%; height: 170px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
-  figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; }
+  figcaption { min-height: 24px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; }
   figcaption .pixel { font-size: 17px; color: var(--link); }
 
   .lbl { font: 600 12px var(--mono); fill: var(--text3); text-anchor: middle; }
@@ -81,13 +83,14 @@ for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) {
   @keyframes ring { from { transform: scale(.6); opacity: .7; } to { transform: scale(1.3); opacity: 0; } }
   .gnd { stroke: var(--line3); stroke-width: 1.5; fill: none; }
 
-  .eye-big { padding: 18px 0 14px !important; }
+  .eye-frame { height: 170px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
+  .eye-big { flex: 1 1 auto; width: 100%; min-height: 0; }
   .eye-big path[data-eyepath] { transition: d var(--morph) var(--ease), stroke var(--base) var(--ease), opacity var(--base); }
   input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; }
 
-  .wf { fill: #10181F; stroke: var(--line3); stroke-width: 1.5; }
+  .wf { fill: #111A24; stroke: var(--line3); stroke-width: 1.5; }
   .notch { stroke: var(--bg); stroke-width: 6; }
-  .die { fill: #141C27; stroke: #273242; stroke-width: 1; transition: fill var(--morph) var(--ease), stroke var(--morph) var(--ease), transform var(--base) var(--ease); transform-box: fill-box; transform-origin: center; }
+  .die { fill: #18222F; stroke: #33425A; stroke-width: 1; transition: fill var(--morph) var(--ease), stroke var(--morph) var(--ease), transform var(--base) var(--ease); transform-box: fill-box; transform-origin: center; }
   .die.fab { fill: #1B5E41; stroke: var(--accent); }
   .die.fab:hover { transform: scale(1.15); }
   .die.gold { fill: var(--gold); stroke: #F7D58C; }

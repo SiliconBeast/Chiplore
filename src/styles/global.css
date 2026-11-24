@@ -140,7 +140,7 @@ h1, h2, h3 { font-weight: 600; margin: 0; }
 a:hover > .art, .lift:hover .art { transform: translateY(-3px); }
 
 /* Footer */
-.site-footer { border-top: 1px solid var(--line); margin-top: 96px; }
+.site-footer { border-top: 1px solid var(--line); margin-top: 72px; }
 .site-footer .wrap { padding-top: 40px; padding-bottom: 56px; display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .footer-links { display: flex; gap: 24px; flex-wrap: wrap; font-size: 15px; }
 .footer-links a { color: var(--text2); }
@@ -174,7 +174,9 @@ a:hover > .art, .lift:hover .art { transform: translateY(-3px); }
 
 @media (max-width: 720px) {
   .wrap { padding: 0 20px; }
-  .main-nav { gap: 18px; }
+  .main-nav { gap: 18px; order: 3; width: 100%; margin-top: -8px; }
+  .main-nav a { padding: 12px 0; }
+  .site-header .wrap { gap: 0 20px; min-height: 56px; }
   .header-gh span { display: none; }
 }
 
