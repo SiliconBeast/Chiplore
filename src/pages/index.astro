@@ -18,19 +18,20 @@ const verified = glyph(3);
 <Base>
   <section class="wrap hero">
     <div class="hero-text">
+      <p class="kicker blink" data-scramble="intro" style="margin-bottom: 22px">Gate · Chip · Board</p>
       <h1 class="display">Learn how chips and circuit boards really work.</h1>
       <p class="lead">Free, hands-on lessons from a single logic gate to your own chip and the board it sits on. Everything runs in the browser.</p>
       <div class="hero-ctas">
-        <a class="btn go" href={u('/courses/digital-logic/')}>Start learning</a>
+        <a class="btn go" href={u('/courses/digital-logic/')}>Start learning <span class="arrow" aria-hidden="true">→</span></a>
         <a class="btn" href={u('/roadmaps/')}>See roadmaps</a>
       </div>
-      <p class="quiet" style="margin: 22px 0 0; font-size: 14px">No account · open source · always free</p>
+      <p class="px quiet" style="margin: 24px 0 0; font-size: 15px">No account · open source · always free</p>
     </div>
     <Zoom />
   </section>
 
   <section class="wrap block" aria-labelledby="start-title">
-    <h2 id="start-title" class="h3">Where are you starting from?</h2>
+    <h2 id="start-title" class="h3"><span class="sec-num" aria-hidden="true"><b>01</b> / 04</span>Where are you starting from?</h2>
     <div class="two-col">
       {starts.map((s) => (
         <a class="row-link" href={s.href.startsWith('http') ? s.href : u(s.href)}>
@@ -44,13 +45,14 @@ const verified = glyph(3);
 
   <section class="band" aria-labelledby="courses-title">
     <div class="wrap">
-      <h2 id="courses-title" class="h2">Courses</h2>
+      <h2 id="courses-title" class="h2"><span class="sec-num" aria-hidden="true"><b>02</b> / 04</span>Courses</h2>
       <p class="muted" style="margin: 8px 0 0; font-size: 17px">Start at the top and work down, or jump straight to what you need.</p>
       <div class="course-grid">
-        {courses.map((c) => (
+        {courses.map((c, i) => (
           <a class="course-card" href={u(`/courses/${c.slug}/`)}>
             <CourseArt name={c.art} vt={`art-${c.slug}`} />
             <span>
+              <span class="idx" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
               <span class="course-name" style={`view-transition-name: title-${c.slug}`}>{c.title}</span>
               <span class="muted course-blurb">{c.blurb}</span>
               <span class="quiet course-meta">{c.meta} · {units(c)}{c.status === 'writing' ? ' · help wanted' : ''}</span>
@@ -63,7 +65,7 @@ const verified = glyph(3);
 
   <section class="band" aria-labelledby="how-title">
     <div class="wrap">
-      <h2 id="how-title" class="h2">Hardware you can see</h2>
+      <h2 id="how-title" class="h2"><span class="sec-num" aria-hidden="true"><b>03</b> / 04</span>Hardware you can see</h2>
       <div class="three-col">
         <div>
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#62D6A2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 17h4V7h6v10h6V7h4"></path></svg>
@@ -87,7 +89,7 @@ const verified = glyph(3);
   <section class="band" aria-labelledby="roles-title">
     <div class="wrap">
       <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap">
-        <h2 id="roles-title" class="h2">Roadmaps to real jobs</h2>
+        <h2 id="roles-title" class="h2"><span class="sec-num" aria-hidden="true"><b>04</b> / 04</span>Roadmaps to real jobs</h2>
         <a href={u('/roadmaps/')} style="font-weight: 600; font-size: 15px">All {roadmaps.length} roadmaps</a>
       </div>
       <div style="margin-top: 20px">

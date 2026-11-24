@@ -27,7 +27,7 @@ const kindIcon: Record<string, string> = {
     <div class="course-head">
       <CourseArt name={course.art} size={96} vt={`art-${course.slug}`} />
       <div>
-        <p class="caps">Course · {open ? `${course.units.length} units` : 'being written'}</p>
+        <p class="kicker" data-scramble>Course · {open ? `${course.units.length} units` : 'being written'}</p>
         <h1 class="title" style={`margin-top: 8px; width: max-content; max-width: 100%; view-transition-name: title-${course.slug}`}>{course.title}</h1>
         <p class="lead" style="margin: 10px 0 0; max-width: 640px; font-size: 17px">{course.blurb}</p>
       </div>

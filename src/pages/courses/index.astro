@@ -6,20 +6,20 @@ import { u } from '../../lib/url.js';
 ---
 <Base title="Courses" active="Courses">
   <div class="wrap" style="padding-top: 56px">
-    <p class="caps">Courses</p>
+    <p class="kicker" data-scramble>Courses</p>
     <h1 class="title" style="margin-top: 12px">From one gate to the whole board.</h1>
     <p class="lead" style="margin: 14px 0 0; max-width: 640px">Digital logic is open now. The rest are planned in the open, and every one of them is looking for writers.</p>
     <ol class="list">
       {courses.map((c, i) => (
         <li>
           <a class="row-link lift" href={u(`/courses/${c.slug}/`)} style="min-height: 96px; gap: 24px">
-            <span class="mono quiet" style="width: 22px; font-size: 12px">{String(i + 1).padStart(2, '0')}</span>
+            <span class="idx" style="width: 30px">{String(i + 1).padStart(2, '0')}</span>
             <CourseArt name={c.art} size={48} vt={`art-${c.slug}`} />
             <span style="flex: 1 1 auto">
               <span style={`display: block; width: max-content; max-width: 100%; font-size: 18px; font-weight: 600; view-transition-name: title-${c.slug}`}>{c.title}</span>
               <span class="muted" style="display: block; margin-top: 3px; font-size: 15px">{c.blurb}</span>
             </span>
-            <span class="mono" style={`flex: none; font-size: 12px; letter-spacing: .04em; color: ${c.status === 'open' ? 'var(--link)' : 'var(--text3)'}`}>{c.status === 'open' ? 'OPEN' : 'HELP WANTED'}</span>
+            <span class="px" data-scramble style={`flex: none; font-size: 14px; color: ${c.status === 'open' ? 'var(--link)' : 'var(--text3)'}`}>{c.status === 'open' ? 'OPEN' : 'HELP WANTED'}</span>
           </a>
         </li>
       ))}

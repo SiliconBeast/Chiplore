@@ -5,7 +5,6 @@ import CourseArt from '../../components/CourseArt.astro';
 import Eye from '../../components/Eye.astro';
 import { courses } from '../../data/courses.js';
 import { u, REPO } from '../../lib/url.js';
-import { clockPath } from '../../lib/bitsim.js';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
@@ -18,15 +17,8 @@ const course = courses.find((c) => c.slug === d.course)!;
 const unit = course.units?.[d.unit - 1];
 const items = unit?.items ?? [];
 const here = `/learn/${entry.id}/`;
-const clk = clockPath(16, 1600, 2, 12);
 ---
 <Base title={d.title} description={d.summary} active="Courses">
-  <div class="read-progress" aria-hidden="true">
-    <svg viewBox="0 0 1600 14" preserveAspectRatio="none">
-      <path d={clk} fill="none" stroke="#1F2937" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>
-      <path class="clk-live" pathLength="1" d={clk} fill="none" stroke="#3FBF86" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>
-    </svg>
-  </div>
   <div class="wrap lesson-grid">
     <aside class="side" aria-label="This unit">
       <a class="quiet" href={u(`/courses/${course.slug}/`)} style="font-size: 14px">← {course.title}</a>
@@ -52,7 +44,8 @@ const clk = clockPath(16, 1600, 2, 12);
       <header class="lesson-head">
         <CourseArt name={d.art} size={60} />
         <div>
-          <h1 class="title">{d.title}</h1>
+          <p class="kicker" data-scramble style="font-size: 15px">Unit {d.unit} · Lesson</p>
+          <h1 class="title" style="margin-top: 6px">{d.title}</h1>
           <p class="quiet" style="margin: 6px 0 0; font-size: 15px">{d.level} · {d.minutes} min · runs in your browser</p>
         </div>
       </header>
@@ -74,7 +67,7 @@ const clk = clockPath(16, 1600, 2, 12);
 
 <style>
   .lesson-grid { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 64px; padding-top: 48px; }
-  .side { position: sticky; top: 40px; align-self: start; }
+  .side { position: sticky; top: 112px; align-self: start; }
   .side-list { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid var(--line); }
   .side-list a, .side-list .planned { display: flex; flex-direction: column; gap: 2px; padding: 10px 0 10px 12px; border-bottom: 1px solid var(--line); color: var(--text2); font-size: 15px; }
   .side-list a:hover { color: var(--text); text-decoration: none; }
